@@ -1,0 +1,3124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SM-OS — Shreenidhi M</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=IBM+Plex+Mono:wght@400;700&display=swap');
+
+:root{
+  /* ===== CORE ===== */
+
+  --bg:#0000aa;
+  --surface:#000080;
+  --surface2:#000096;
+  --win-bg:#00008f;
+
+  /* ===== BORDERS ===== */
+
+  --border-light:#ffffff;
+  --border-mid:#c0c0c0;
+  --border-dark:#5f5f5f;
+
+  /* ===== TITLEBAR ===== */
+
+  --titlebar:#00008f;
+  --titlebar2:#2b2bcf;
+
+  --titlebar-active:#f2f2f2;
+  --titlebar-active-text:#000080;
+
+  /* ===== TEXT ===== */
+
+  --text:#d8d8ff;
+  --text-dim:#8d8dd8;
+
+  --white:#ffffff;
+
+  /* ===== ACCENTS ===== */
+
+  --green:#00ff00;
+  --green2:#44ff44;
+
+  --cyan:#00ffff;
+
+  --amber:#ffcc00;
+
+  --red:#ff4444;
+
+  /* ===== FONT ===== */
+
+  --font-vt:'VT323', monospace;
+  --font-mono:'VT323', monospace;
+  --font-ibm:'VT323', monospace;
+
+  /* ===== SYSTEM ===== */
+
+  --taskbar-h:38px;
+
+  --phosphor-white:0 0% 94%;
+  --bsod-blue:240 100% 25%;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);font-family:var(--font-mono);color:var(--text);min-height:100vh;overflow:auto;cursor:default;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.06) 0px,rgba(0,0,0,0.06) 1px,transparent 1px,transparent 2px);pointer-events:none;z-index:99999;opacity:0.5;}
+
+/* ===== BOOT ===== */
+#bootScreen{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:99990;transition:opacity 0.6s;}
+#bootScreen.fade{opacity:0;pointer-events:none;}
+#bootScreen.gone{display:none;}
+.boot-wrap{width:min(700px,90vw);font-family:var(--font-mono);font-size:14px;color:#c8c8ff;}
+.boot-line{line-height:1.7;opacity:0;animation:bfade 0.1s forwards;white-space:pre;}
+.boot-line.ok{color:#00ff00;}.boot-line.warn{color:#ffcc00;}.boot-line.err{color:#ff4444;}
+@keyframes bfade{to{opacity:1;}}
+.boot-bar-wrap{margin-top:14px;}
+.boot-bar{height:14px;border:1px solid #00ff00;padding:1px;}
+.boot-bar-fill{height:100%;background:#00ff00;width:0%;transition:width 0.12s steps(8);box-shadow:0 0 6px #00ff00;}
+.boot-bar-label{color:#00ff00;font-size:12px;margin-top:4px;letter-spacing:2px;}
+
+/* ===== WELCOME ===== */
+#welcomeScreen{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:99980;}
+#welcomeScreen.visible{display:flex;}
+#welcomeScreen.fade{opacity:0;pointer-events:none;transition:opacity 0.5s;}
+#welcomeScreen.gone{display:none;}
+.welcome-card{width:min(500px,90vw);border:2px solid var(--white);background:var(--surface);padding:44px 40px;box-shadow:8px 8px 0 rgba(0,0,0,0.5);text-align:center;}
+.welcome-logo{font-family:var(--font-vt);font-size:72px;color:var(--green);letter-spacing:6px;text-shadow:2px 2px 0 #004400,0 0 20px rgba(0,255,0,0.4);line-height:1;-webkit-text-stroke:1px #005500;}
+.welcome-sub{font-family:var(--font-mono);font-size:13px;color:var(--white);margin:16px 0 4px;letter-spacing:1px;}
+.welcome-desc{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin-bottom:32px;}
+.welcome-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:48px;border:2px solid var(--white);background:transparent;color:var(--amber);font-family:var(--font-vt);font-size:22px;letter-spacing:2px;cursor:pointer;margin-bottom:14px;transition:background 0.15s;}
+.welcome-btn:hover{background:rgba(255,255,255,0.1);}
+.welcome-note{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-top:12px;}
+
+/* ===== DESKTOP ===== */
+
+#desktop{
+  position:fixed;
+
+  inset:0 0 var(--taskbar-h) 0;
+
+  display:none;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0000aa 0%,
+      #00008f 100%
+    );
+
+  overflow:auto;
+}
+
+#desktop.visible{
+  display:block;
+}
+
+#desktop::before{
+  content:'';
+
+  position:absolute;
+  inset:0;
+
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,0.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,0.035) 1px,
+      transparent 1px
+    );
+
+  background-size:48px 48px;
+
+  opacity:.35;
+
+  pointer-events:none;
+}
+/* ===== TASKBAR ===== */
+.taskbar{position:fixed;bottom:0;left:0;right:0;height:var(--taskbar-h);background:#c0c0c0;border-top:2px solid #ffffff;display:flex;align-items:center;padding:3px 4px;gap:4px;z-index:9000;}
+.start-btn{font-family:var(--font-vt);font-size:18px;color:#fff;background:#000080;border:2px outset #8080c0;padding:2px 12px;height:30px;cursor:pointer;letter-spacing:1px;display:flex;align-items:center;gap:6px;flex-shrink:0;box-shadow:inset 1px 1px 0 rgba(255,255,255,0.3);min-width:80px;}
+.start-btn:active{border-style:inset;}
+.tb-sep{width:1px;height:26px;background:#808080;margin:0 2px;}
+.tb-apps{display:flex;gap:3px;flex:1;min-width:0;overflow:hidden;}
+.tb-btn{font-family:var(--font-vt);font-size:14px;color:#eee;background:#2020a0;border:2px outset #6060c0;padding:1px 8px;height:28px;cursor:pointer;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis;transition:background 0.1s;display:flex;align-items:center;gap:4px;}
+.tb-btn.active{background:#4040c8;border-style:inset;}
+.tb-btn:hover{background:#3030b0;}
+.tb-tray{
+  display:flex;
+  align-items:center;
+
+  gap:0;
+
+  border:2px inset #808080;
+
+  background:#c0c0c0;
+
+  height:28px;
+
+  overflow:hidden;
+}
+
+.tb-tray-icon,
+.tb-clock{
+  height:100%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 12px;
+
+  border-left:1px solid #707070;
+  border-right:1px solid #ffffff;
+
+  color:#000080;
+
+  font-family:var(--font-vt);
+
+  font-size:18px;
+}
+
+.tb-clock{
+  min-width:90px;
+
+  font-weight:bold;
+
+  letter-spacing:1px;
+}
+
+/* ===== START MENU ===== */
+.start-menu{position:fixed;left:0;bottom:var(--taskbar-h);width:200px;background:var(--surface2);border:2px outset #c0c0ff;box-shadow:4px -4px 12px rgba(0,0,0,0.6);z-index:9100;display:none;flex-direction:column;}
+.start-menu.open{display:flex;}
+.sm-header{background:linear-gradient(180deg,#0000cc,#000080);color:#fff;padding:6px 12px;font-size:20px;letter-spacing:1px;border-bottom:2px solid #c0c0ff;font-family:var(--font-vt);}
+.sm-item{display:flex;align-items:center;gap:10px;padding:5px 12px;font-family:var(--font-vt);font-size:17px;color:#fff;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;}
+.sm-item:hover{background:rgba(0,0,200,0.5);}
+.sm-sep{height:1px;background:rgba(255,255,255,0.2);margin:2px 8px;}
+
+/* ===== WINDOWS ===== */
+.window{position:absolute;background:var(--win-bg);border:2px outset #c0c0ff;box-shadow:6px 6px 0 rgba(0,0,0,0.5);display:none;flex-direction:column;min-width:260px;animation:winOpen 0.14s cubic-bezier(0.34,1.56,0.64,1);z-index:20;overflow:hidden;max-height:90vh;max-width:95vw;}
+.window.open{display:flex;}
+.window.minimized{display:none !important;}
+@keyframes winOpen{from{transform:scale(0.94);opacity:0;}to{transform:scale(1);opacity:1;}}
+/* ===== TITLEBAR ===== */
+
+.win-titlebar{
+
+  height:22px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 5px;
+
+  gap:4px;
+
+  cursor:move;
+
+  user-select:none;
+
+  background:#c0c0c0;
+
+  border-top:2px solid #ffffff;
+  border-left:2px solid #ffffff;
+
+  border-right:2px solid #808080;
+  border-bottom:2px solid #808080;
+
+  color:#000080;
+
+  font-family:var(--font-vt);
+
+  font-size:17px;
+
+  letter-spacing:1px;
+
+  text-transform:uppercase;
+}
+
+.win-icon-sm{font-size:12px;}
+.win-title{font-family:var(--font-vt);font-size:15px;color:#000080;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.5px;}
+.win-controls{display:flex;gap:2px;margin-left:auto;}
+.win-btn{width:16px;height:14px;border:2px outset #a0a0a0;background:#dcdcdc;color:#000;font-size:8px;font-weight:900;font-family:monospace;cursor:pointer;display:grid;place-items:center;flex-shrink:0;padding:0;}
+.win-btn:active{border-style:inset;}
+.win-btn.cls{background:#ff8080;}
+.win-menubar{display:flex;background:#c0c0c0;border-bottom:1px solid #808080;flex-shrink:0;}
+.win-menu-item{padding:1px 10px;font-family:var(--font-vt);font-size:15px;color:#000080;cursor:pointer;}
+.win-menu-item:hover{background:#000080;color:#fff;}
+.win-body{padding:10px;overflow-y:auto;overflow-x:hidden;flex:1;}
+.win-statusbar{height:18px;background:#c0c0c0;border-top:2px inset #808080;display:flex;align-items:center;padding:0 6px;gap:10px;flex-shrink:0;font-family:var(--font-mono);font-size:10px;}
+.status-panel{border:1px inset #808080;padding:0 5px;height:13px;display:flex;align-items:center;gap:3px;color:#000080;}
+.status-dot{width:5px;height:5px;border-radius:50%;background:#00cc00;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{50%{opacity:0.2;}}
+
+/* ===== TERMINAL ===== */
+.term-body{background:#000090;padding:10px;font-family:var(--font-mono);font-size:13px;color:#00ff00;min-height:280px;height:100%;cursor:text;}
+.term-logo{
+
+  color:transparent;
+
+  -webkit-text-stroke:1px #b2b2d4;
+
+  font-family:monospace;
+
+  font: size 8px;
+
+  font-weight:bold;
+
+  line-height:1;
+
+  letter-spacing:1px;
+
+  margin:15px 0 18px;
+
+  padding-left:8px;
+
+  white-space:pre;
+
+  user-select:none;
+}
+.term-line{line-height:1.65;margin-bottom:1px;}
+.term-line.green{color:#00ff00;}.term-line.cyan{color:#00ffff;}.term-line.amber{color:#ffcc00;}.term-line.white{color:#ffffff;}.term-line.dim{color:#8888aa;}.term-line.red{color:#ff4444;}.term-line.prompt{color:#00ff00;}
+.term-input-row{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.term-prompt-span{color:#00ff00;white-space:nowrap;}
+.term-input{background:none;border:none;outline:none;color:#00ff00;font-family:var(--font-mono);font-size:13px;flex:1;caret-color:#00ff00;}
+
+.term-input-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  margin-top:4px;
+}
+
+.term-prompt-span{
+  color:#00ff00;
+  white-space:nowrap;
+}
+
+.term-input{
+  background:none;
+  border:none;
+  outline:none;
+
+  color:#00ff00;
+
+  font-family:var(--font-mono);
+  font-size:13px;
+
+  flex:1;
+
+  caret-color:#00ff00;
+}
+
+/* ===== CONTENT STYLES ===== */
+.section-title{font-family:var(--font-vt);font-size:24px;color:#00ff00;letter-spacing:2px;margin-bottom:10px;}
+.prompt-line{font-family:var(--font-mono);font-size:11px;color:#8888aa;margin-bottom:12px;}
+.prompt-line span{color:#00ff00;}
+.about-name{font-family:var(--font-vt);font-size:34px;color:#fff;letter-spacing:2px;}
+.about-role{font-family:var(--font-mono);font-size:11px;color:#00ffff;margin:2px 0 10px;}
+.about-bio{font-family:var(--font-mono);font-size:11px;color:#c8c8ff;line-height:1.7;}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:9px;padding:1px 7px;border:1px solid rgba(255,255,255,0.3);color:#aaaacc;margin:2px;}
+.tag.g{border-color:#00aa00;color:#00ff00;}.tag.b{border-color:#2255aa;color:#6699ff;}.tag.c{border-color:#006688;color:#00ffff;}.tag.a{border-color:#886600;color:#ffcc00;}.tag.p{border-color:#664499;color:#cc88ff;}
+
+/* ===== SKILL BARS ===== */
+.skill-section{margin-bottom:12px;}
+.skill-cat{font-family:var(--font-mono);font-size:10px;color:#8888aa;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;border-bottom:1px solid #333388;padding-bottom:2px;}
+.skill-row{margin-bottom:5px;}
+.skill-label-row{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;color:#c8c8ff;margin-bottom:2px;}
+.skill-track{height:10px;border:1px solid #333388;background:#000050;position:relative;}
+.skill-fill{height:100%;animation:sfill 1.2s ease-out forwards;transform-origin:left;}
+@keyframes sfill{from{width:0 !important;}}
+.skill-fill::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 6px,rgba(0,0,80,0.4) 6px,rgba(0,0,80,0.4) 7px);}
+
+/* ===== PROJECT CARDS ===== */
+.project-card{background:#00006a;border:1px solid #333388;padding:10px;margin-bottom:8px;transition:border-color 0.2s;}
+.project-card:hover{border-color:#00ff00;}
+.project-name{font-family:var(--font-mono);font-size:12px;color:#fff;font-weight:700;margin-bottom:2px;}
+.project-company{font-family:var(--font-mono);font-size:10px;color:#8888aa;margin-bottom:5px;}
+.project-desc{font-family:var(--font-mono);font-size:10px;color:#c8c8ff;line-height:1.6;margin-bottom:6px;}
+.project-link{font-family:var(--font-mono);font-size:10px;color:#00ff00;text-decoration:none;border:1px solid #00aa00;padding:1px 8px;display:inline-block;margin-right:6px;margin-top:4px;}
+.project-link:hover{background:rgba(0,255,0,0.1);}
+
+/* ===== EXPERIENCE ===== */
+.exp-item{padding-left:10px;border-left:2px solid #00ff00;margin-bottom:14px;}
+.exp-company{font-family:var(--font-mono);font-size:11px;color:#00ffff;font-weight:700;}
+.exp-role{font-family:var(--font-mono);font-size:10px;color:#fff;margin-top:1px;}
+.exp-period{font-family:var(--font-mono);font-size:9px;color:#8888aa;margin:1px 0 4px;}
+.exp-desc{font-family:var(--font-mono);font-size:10px;color:#c8c8ff;line-height:1.6;}
+
+/* ===== CONTACT ===== */
+.contact-list{list-style:none;}
+.contact-list li{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #333388;}
+.c-icon{font-size:14px;width:20px;text-align:center;}
+.c-label{font-family:var(--font-mono);font-size:9px;color:#8888aa;width:65px;}
+.c-val{font-family:var(--font-mono);font-size:10px;color:#00ff00;text-decoration:none;}
+.c-val:hover{text-decoration:underline;}
+
+/* ===== RADAR ===== */
+.radar-wrap{background:#000020;border:2px solid #003300;padding:14px;font-family:var(--font-mono);}
+.radar-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;border-bottom:1px solid #003300;padding-bottom:6px;}
+.radar-header-title{font-family:var(--font-vt);font-size:20px;color:#00ff00;letter-spacing:2px;}
+.radar-row{margin-bottom:10px;}
+.radar-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.radar-label{font-size:11px;color:#00ff00;}
+.radar-pct{font-size:11px;color:#00cc00;}
+.radar-bar{height:16px;background:#000a00;border:1px solid #003300;display:flex;gap:1px;padding:2px;}
+.radar-seg{flex:1;background:#002200;position:relative;overflow:hidden;}
+.radar-seg.on{background:#00cc00;box-shadow:0 0 4px rgba(0,204,0,0.5);}
+.radar-seg.on::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0.2) 0%,transparent 50%);}
+.radar-status-bar{margin-top:14px;border-top:1px solid #003300;padding-top:8px;font-size:10px;color:#00aa00;display:flex;gap:16px;flex-wrap:wrap;}
+.radar-status-item::before{content:'[';color:#006600;}
+.radar-status-item::after{content:']';color:#006600;}
+.radar-status-item.on{color:#00ff00;}
+
+/* ===== FILE MANAGER ===== */
+.file-addr{flex:1;background:#fff;border:2px inset #808080;font-family:var(--font-mono);font-size:11px;color:#000080;padding:1px 6px;display:flex;align-items:center;}
+.file-layout{display:flex;flex:1;overflow:hidden;}
+.file-sidebar{width:120px;background:#00006a;border-right:1px solid #333388;flex-shrink:0;overflow-y:auto;}
+.file-sidebar-item{display:flex;align-items:center;gap:6px;padding:5px 8px;cursor:pointer;font-family:var(--font-vt);font-size:14px;color:#c8c8ff;border-bottom:1px solid #333388;}
+.file-sidebar-item:hover,.file-sidebar-item.active{background:rgba(0,0,200,0.5);color:#fff;}
+.file-content{flex:1;padding:8px;overflow-y:auto;}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px;}
+.file-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;cursor:pointer;border:1px solid transparent;transition:all 0.1s;text-align:center;}
+.file-item:hover{background:rgba(0,0,200,0.4);border-color:#8888cc;}
+.file-item.selected{background:rgba(0,0,200,0.6);border-color:#fff;}
+.file-item-icon{font-size:26px;line-height:1;}
+.file-item-name{font-family:var(--font-vt);font-size:13px;color:#fff;text-shadow:1px 1px 2px #000;word-break:break-word;}
+.file-detail-card{background:#00006a;border:1px solid #00aa00;padding:10px;font-family:var(--font-mono);font-size:11px;}
+.file-detail-title{font-family:var(--font-vt);font-size:18px;color:#00ff00;margin-bottom:6px;}
+.file-detail-desc{color:#c8c8ff;line-height:1.6;margin-bottom:8px;}
+
+/* ===== SNAKE ===== */
+.snake-hud{display:flex;justify-content:space-between;font-family:var(--font-vt);font-size:18px;color:#ffcc00;margin-bottom:4px;width:360px;}
+.snake-board{position:relative;width:360px;height:360px;border:2px solid #00aa00;background:#000020;background-image:linear-gradient(rgba(0,0,100,0.15) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,100,0.15) 1px,transparent 1px);background-size:18px 18px;overflow:hidden;}
+.snake-cell{position:absolute;width:18px;height:18px;}
+.snake-head{background:#00ff00;box-shadow:0 0 6px #00ff00;}
+.snake-body{background:#00bb00;}
+.snake-food{background:#ff4444;box-shadow:0 0 6px #ff4444;border-radius:2px;}
+.snake-overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);text-align:center;font-family:var(--font-vt);color:#ff4444;font-size:24px;}
+.snake-overlay.vis{display:flex;}
+.retro-btn{font-family:var(--font-vt);font-size:17px;padding:4px 14px;cursor:pointer;border:1px solid #00aa00;background:transparent;color:#00ff00;margin-top:8px;}
+.retro-btn:hover{background:rgba(0,255,0,0.1);}
+
+/* ===== MEMORY ===== */
+.mem-grid{display:grid;grid-template-columns:repeat(4,60px);gap:8px;justify-content:center;margin-top:8px;}
+.mem-card{width:60px;height:60px;border:2px solid #333388;background:rgba(0,0,100,0.4);color:transparent;font-family:var(--font-vt);font-size:18px;display:grid;place-items:center;cursor:pointer;transition:all 0.2s;}
+.mem-card.flip{color:#00ff00;background:rgba(0,255,0,0.08);border-color:#00ff00;}
+.mem-card.match{color:#ffcc00;background:rgba(255,200,0,0.08);border-color:#ffcc00;}
+
+/* ===== CODE PLAYGROUND ===== */
+.code-editor{width:100%;min-height:150px;resize:vertical;background:#000020;color:#c8c8ff;border:1px solid #333388;padding:8px;font-family:var(--font-mono);font-size:12px;line-height:1.6;outline:none;}
+.code-output{min-height:70px;background:#000030;border:1px solid #333388;padding:8px;color:#00ff00;font-family:var(--font-mono);font-size:11px;white-space:pre-wrap;margin-top:6px;}
+.code-actions{display:flex;gap:6px;margin-top:6px;}
+
+/* ===== DISPLAY SETTINGS ===== */
+.disp-section{margin-bottom:14px;}
+.disp-label{font-family:var(--font-mono);font-size:10px;color:#8888aa;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.theme-row{display:flex;gap:6px;flex-wrap:wrap;}
+.theme-sw{width:52px;height:34px;border:2px solid #333388;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;font-family:var(--font-mono);font-size:9px;padding:2px;transition:all 0.12s;position:relative;}
+.theme-sw:hover,.theme-sw.on{border-color:#fff;}
+.theme-sw span{position:absolute;bottom:2px;}
+.wp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.wp-thumb{height:48px;border:2px solid #333388;cursor:pointer;position:relative;overflow:hidden;transition:all 0.12s;display:flex;align-items:flex-end;}
+.wp-thumb:hover,.wp-thumb.on{border-color:#fff;}
+.wp-thumb canvas{position:absolute;inset:0;width:100%;height:100%;}
+.wp-thumb-label{position:relative;z-index:1;font-family:var(--font-mono);font-size:9px;color:#fff;background:rgba(0,0,0,0.7);width:100%;padding:1px 3px;}
+.disp-toggle{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.disp-toggle-label{font-family:var(--font-mono);font-size:10px;color:#c8c8ff;}
+.toggle-btn{padding:2px 8px;border:1px solid #333388;background:transparent;color:#8888aa;font-family:var(--font-vt);font-size:13px;cursor:pointer;}
+.toggle-btn.on{color:#00ff00;border-color:#00aa00;background:rgba(0,255,0,0.05);}
+
+/* ===== CLOCK ===== */
+.big-clock{font-family:var(--font-vt);font-size:64px;color:#00ff00;text-align:center;letter-spacing:4px;text-shadow:0 0 20px rgba(0,255,0,0.4);}
+.big-date{font-family:var(--font-mono);font-size:12px;color:#8888aa;text-align:center;letter-spacing:2px;margin-top:4px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-top:10px;}
+.cal-cell{text-align:center;padding:3px 1px;font-family:var(--font-vt);font-size:15px;color:#8888aa;}
+.cal-cell.hdr{color:#00ff00;font-size:13px;}
+.cal-cell.today{color:#ffcc00;background:rgba(255,200,0,0.1);}
+.cal-cell.other{color:rgba(100,100,150,0.4);}
+
+/* ===== AI TOOLS ===== */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ai-card{border:1px solid #333388;background:#00006a;padding:8px;}
+.ai-name{font-family:var(--font-vt);font-size:17px;color:#00ff00;margin-bottom:2px;}
+.ai-desc{font-family:var(--font-mono);font-size:10px;color:#c8c8ff;line-height:1.4;}
+
+/* ===== RECYCLE BIN ===== */
+.recycle-empty{text-align:center;padding:30px 10px;}
+.recycle-empty-icon{font-size:48px;margin-bottom:10px;}
+.recycle-empty-msg{font-family:var(--font-vt);font-size:20px;color:#8888aa;letter-spacing:2px;}
+
+/* ===== BROWSER ===== */
+.browser-bar{display:flex;align-items:center;gap:4px;padding:4px 6px;background:#c0c0c0;border-bottom:1px solid #808080;}
+.browser-input{flex:1;background:#fff;border:2px inset #808080;font-family:var(--font-mono);font-size:11px;color:#000080;padding:2px 6px;outline:none;}
+.browser-go{font-family:var(--font-vt);font-size:15px;padding:2px 10px;border:2px outset #a0a0a0;background:#c0c0c0;color:#000080;cursor:pointer;}
+.browser-go:active{border-style:inset;}
+.browser-iframe-wrap{flex:1;overflow:hidden;background:#000090;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.browser-links{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;}
+.browser-link-btn{font-family:var(--font-vt);font-size:15px;color:#00ff00;border:1px solid #00aa00;background:#00006a;padding:8px;cursor:pointer;text-align:center;transition:background 0.12s;}
+.browser-link-btn:hover{background:rgba(0,255,0,0.1);}
+
+/* ===== NOTIFICATION ===== */
+.notif{position:fixed;bottom:46px;right:10px;background:#000080;border:2px outset #c0c0ff;padding:7px 12px;z-index:9500;max-width:240px;animation:nIn 0.25s ease-out,nOut 0.3s ease-in 2.7s forwards;box-shadow:4px 4px 10px rgba(0,0,0,0.6);}
+.notif-title{font-family:var(--font-vt);font-size:16px;color:#00ff00;margin-bottom:2px;}
+.notif-msg{font-family:var(--font-mono);font-size:10px;color:#c8c8ff;}
+@keyframes nIn{from{transform:translateX(110%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes nOut{to{opacity:0;transform:translateX(110%);}}
+
+/* ===== CONTEXT MENU ===== */
+.ctx-menu{position:fixed;background:#000080;border:2px outset #c0c0ff;box-shadow:4px 4px 10px rgba(0,0,0,0.6);z-index:9200;display:none;min-width:160px;}
+.ctx-menu.open{display:block;}
+.ctx-item{padding:5px 14px;font-family:var(--font-vt);font-size:16px;color:#fff;cursor:pointer;}
+.ctx-item:hover{background:rgba(0,0,200,0.5);}
+.ctx-sep{height:1px;background:rgba(255,255,255,0.2);margin:2px 8px;}
+
+/* ===== SCROLLBARS ===== */
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:#000040;}
+::-webkit-scrollbar-thumb{background:#333388;}
+::-webkit-scrollbar-thumb:hover{background:#5555aa;}
+
+@media(max-width:600px){
+  .window{width:96vw !important;left:2vw !important;}
+  .snake-board,.snake-hud{width:280px;}
+  .snake-board{height:280px;background-size:14px 14px;}
+  .snake-cell{width:14px;height:14px;}
+  .ai-grid{grid-template-columns:1fr;}
+}
+/* ===== MINI CLIPPY ===== */
+
+#clippy{
+  position:fixed;
+  display:none;
+
+  flex-direction:column;
+
+  bottom:58px;
+  left:20px;
+
+  width:230px;
+
+  background:var(--surface);
+
+  border:1px solid var(--border-mid);
+
+  box-shadow:
+    inset -1px -1px 0 #000,
+    inset 1px 1px 0 #fff;
+
+  font-family:var(--font-vt);
+
+  font-size:12px;
+
+  color:#fff;
+
+  z-index:99991;
+
+  overflow:hidden;
+}
+
+.clippy-header{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  padding:2px 4px;
+
+  background:#c0c0c0;
+
+  border-bottom:1px solid #808080;
+
+  color:#000080;
+
+  font-size:11px;
+
+  font-family:var(--font-vt);
+
+  width:100%;
+
+  box-sizing:border-box;
+}
+
+.clippy-body{
+
+  display:flex;
+
+  align-items:flex-start;
+
+  gap:10px;
+
+  padding:10px;
+
+  min-height:70px;
+}
+
+.clippy-body img{
+
+  width:42px;
+  height:42px;
+
+  image-rendering:pixelated;
+
+  object-fit:contain;
+
+  flex-shrink:0;
+
+  margin-top:2px;
+}
+
+.clippy-text{
+
+  flex:1;
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:space-between;
+
+  gap:8px;
+}
+
+.clippy-text p{
+
+  margin:0;
+
+  line-height:1.4;
+
+  color:#fff;
+
+  font-size:11px;
+
+  word-break:break-word;
+}
+
+.clippy-actions{
+
+  display:flex;
+
+  gap:6px;
+
+  flex-wrap:wrap;
+}
+
+.clippy-actions button{
+
+  background:#000080;
+
+  color:#00ff00;
+
+  border:1px solid #00ff00;
+
+  padding:3px 7px;
+
+  font-size:9px;
+
+  font-family:var(--font-mono);
+
+  cursor:pointer;
+
+  min-width:58px;
+}
+
+.clippy-actions button:hover{
+  background:#00ff00;
+  color:#000;
+}
+
+.clippy-title{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.clippy-close{
+
+  width:16px;
+  height:16px;
+
+  padding:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#c0c0c0;
+
+  border-top:1px solid #fff;
+  border-left:1px solid #fff;
+
+  border-right:1px solid #808080;
+  border-bottom:1px solid #808080;
+
+  color:#000;
+
+  cursor:pointer;
+
+  font-size:10px;
+}
+
+.about-layout{
+
+  display:flex;
+
+  align-items:flex-start;
+
+  gap:18px;
+
+  margin:14px 0 18px;
+}
+
+.about-photo{
+
+  width:120px;
+  height:120px;
+
+  background:#c0c0c0;
+
+  border-top:2px solid #fff;
+  border-left:2px solid #fff;
+
+  border-right:2px solid #808080;
+  border-bottom:2px solid #808080;
+
+  overflow:hidden;
+
+  flex-shrink:0;
+}
+
+.about-photo img{
+
+  width:100%;
+  height:120%;
+
+  object-fit:cover;
+}
+
+.ascii-wrap{
+
+  overflow:hidden;
+
+  max-width:180px;
+}
+
+.ascii-face{
+
+  margin:0;
+
+  color:#d8d8ff;
+
+  font-size:4px;
+
+  line-height:0.7;
+
+  white-space:pre;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ===== BOOT ===== -->
+<div id="bootScreen">
+  <div class="boot-wrap">
+    <div id="bootLines"></div>
+    <div class="boot-bar-wrap">
+      <div class="boot-bar"><div class="boot-bar-fill" id="bootFill"></div></div>
+      <div class="boot-bar-label" id="bootLabel">INITIALIZING...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WELCOME ===== -->
+<div id="welcomeScreen">
+  <div class="welcome-card">
+    <div class="welcome-logo">SHREENIDHI</div>
+    <div class="welcome-sub">Welcome to SM-OS v2.0</div>
+    <div class="welcome-desc">Software Developer · Java · Spring Boot · AI · Bengaluru</div>
+    <button class="welcome-btn" onclick="enterPortfolio()"><span>▶</span> EXPLORE PORTFOLIO</button>
+    <button class="welcome-btn" onclick="enterPortfolioAndSnake()"><span>🐍</span> PLAY SNAKE</button>
+    <div class="welcome-note">Use the taskbar or START menu to navigate</div>
+  </div>
+</div>
+
+<!-- ===== DESKTOP ===== -->
+<div id="desktop">
+  <canvas id="wpCanvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;"></canvas>
+  <div style="position:absolute;top:6px;left:6px;z-index:5;display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:11px;">
+    <span style="color:#00ff00;text-shadow:0 0 6px rgba(0,255,0,0.6);">⬤ Available for opportunities</span>
+    <a href="https://linkedin.com/in/shreenidhi-m03" target="_blank" style="color:#ffcc00;border:1px solid rgba(200,200,100,0.5);padding:1px 8px;text-decoration:none;background:rgba(0,0,50,0.5);">🔗 LinkedIn</a>
+  </div>
+  <div id="desktopIcons" style="position:absolute;top:30px;right:6px;z-index:5;display:grid;grid-template-columns:repeat(2,68px);gap:4px 6px;max-height:calc(100vh - 80px);overflow-y:auto;padding:4px;"></div>
+</div>
+
+<!-- ===== TERMINAL ===== -->
+<div class="window" id="termWin" style="width:600px;top:40px;left:40px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'termWin')">
+    <span class="win-icon-sm">>_</span>
+    <div class="win-title">TERMINAL_V1.0.EXE</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('termWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('termWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('termWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body" style="padding:0;height:380px;" onclick="document.getElementById('termInput').focus()">
+    <div class="term-body" id="termBody">
+      <pre class="ascii-face">
+*****************************************+++++++++
+********************************************++++++
+************************************************++
+*************************************************+
+**************************************************
+**************************************************
+***********************++*************************
+******************=:::.    :=+********************
+****************+.   ..       .=******************
+***************+      .        :******************
+***************+      ..       :******************
+****************.  ....::..... =******************
+****************+..-:::-*:::--:=******************
+*****************::===-::..::::=******************
+******************-:::..::. ..=*******************
+*******************:..::..:. .********************
+*******************+.       .+********************
+********************-:::...::=********************
+****************#####::-:::::+********************
+**************%%%%%%#*=:::::=+*######*************
+***********#%%%%%%#*#*##=::+*****%%%%%%%#*********
+********#%%%%%%%%%%%%%###*****###%%%%%%%%%********
+******#%%%%%%%%%%%%%%%%%###*##%%%%%%%%%%%##*******
+******#%%%%%%%%#%%%%%%%%#####%%%%%%%%#%####*******
+******#%%%######%%%%%%%%##%%%%%%%%%%##**###*******
+******#%####**###%%%%%%%##%%%%%%%%%##****##*******
+******#%%####**#%**######%%%%%%%%%%#*****###******
+******##%#%##*+##***##**##%%%%#####***+**###******
+******##%%#%#**#*******###%%%%#####***+**###******
+  </pre>
+      <div id="termOutput"></div>
+      <div class="term-input-row">
+        <span class="term-prompt-span">root@shreenidhi:~$&nbsp;</span>
+        <input class="term-input" id="termInput" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel"><div class="status-dot"></div> bash 5.2.0</div>
+    <div class="status-panel">/home/shreenidhi</div>
+    <div class="status-panel">UTF-8</div>
+  </div>
+</div>
+
+<!-- ===== ABOUT ===== -->
+<div class="window" id="aboutWin" style="width:440px;top:60px;left:80px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'aboutWin')">
+    <span class="win-icon-sm">👤</span>
+    <div class="win-title">ABOUT.EXE — Shreenidhi M</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('aboutWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('aboutWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('aboutWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-menubar"><span class="win-menu-item">File</span><span class="win-menu-item">Edit</span></div>
+  <div class="win-body">
+    <div class="prompt-line"><span>root@shreenidhi:~$</span> cat about.txt</div>
+    <div class="about-layout">
+  <!-- ASCII FACE -->
+  <pre class="ascii-face">
+*****************************************+++++++++
+********************************************++++++
+************************************************++
+*************************************************+
+**************************************************
+**************************************************
+***********************++*************************
+******************=:::.    :=+********************
+****************+.   ..       .=******************
+***************+      .        :******************
+***************+      ..       :******************
+****************.  ....::..... =******************
+****************+..-:::-*:::--:=******************
+*****************::===-::..::::=******************
+******************-:::..::. ..=*******************
+*******************:..::..:. .********************
+*******************+.       .+********************
+********************-:::...::=********************
+****************#####::-:::::+********************
+**************%%%%%%#*=:::::=+*######*************
+***********#%%%%%%#*#*##=::+*****%%%%%%%#*********
+********#%%%%%%%%%%%%%###*****###%%%%%%%%%********
+******#%%%%%%%%%%%%%%%%%###*##%%%%%%%%%%%##*******
+******#%%%%%%%%#%%%%%%%%#####%%%%%%%%#%####*******
+******#%%%######%%%%%%%%##%%%%%%%%%%##**###*******
+******#%####**###%%%%%%%##%%%%%%%%%##****##*******
+******#%%####**#%**######%%%%%%%%%%#*****###******
+******##%#%##*+##***##**##%%%%#####***+**###******
+******##%%#%#**#*******###%%%%#####***+**###******
+  </pre>
+</div>
+    <div class="about-name">Shreenidhi M</div>
+    <div class="about-role">> Entry-Level Software Developer · Bengaluru, India</div>
+    <div class="about-bio">B.Tech Computer Science graduate from GITAM University (2025). Hands-on experience in backend and full-stack development.<br><br>Builds RESTful APIs, database-backed applications, and AI-powered systems. Projects include an e-commerce API (Spring Boot), OnlyFoods food delivery platform (Jakarta EE), and Smart AgriBot — an AI crop disease detection system with 90%+ accuracy.<br><br>Currently interning at Tap Academy, Bengaluru.</div>
+    <div style="margin-top:10px;">
+      <span class="tag g">Java</span><span class="tag g">Spring Boot</span><span class="tag b">Jakarta EE</span><span class="tag b">JPA</span><span class="tag a">MySQL</span><span class="tag c">REST APIs</span><span class="tag p">TensorFlow</span><span class="tag">Maven</span><span class="tag">Docker</span><span class="tag">Git</span>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel"><div class="status-dot"></div> ONLINE</div>
+    <div class="status-panel">📍 Bengaluru</div>
+    <div class="status-panel">🎓 GITAM 2025</div>
+  </div>
+</div>
+
+<!-- ===== SKILLS ===== -->
+<div class="window" id="skillsWin" style="width:460px;top:70px;left:100px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'skillsWin')">
+    <span class="win-icon-sm">⚙</span>
+    <div class="win-title">SKILLS.SYS — Tech Stack</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('skillsWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('skillsWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('skillsWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body">
+    <div class="prompt-line"><span>root@shreenidhi:~$</span> ./skills --monitor</div>
+    <div class="skill-section">
+      <div class="skill-cat">// PROGRAMMING</div>
+      <div class="skill-row"><div class="skill-label-row"><span>Java</span><span>88%</span></div><div class="skill-track"><div class="skill-fill" style="width:88%;background:#4488ff;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>Python</span><span>78%</span></div><div class="skill-track"><div class="skill-fill" style="width:78%;background:#4488ff;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>HTML/CSS/JS</span><span>82%</span></div><div class="skill-track"><div class="skill-fill" style="width:82%;background:#4488ff;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>C</span><span>72%</span></div><div class="skill-track"><div class="skill-fill" style="width:72%;background:#4488ff;"></div></div></div>
+    </div>
+    <div class="skill-section">
+      <div class="skill-cat">// BACKEND & FRAMEWORKS</div>
+      <div class="skill-row"><div class="skill-label-row"><span>Spring Boot</span><span>86%</span></div><div class="skill-track"><div class="skill-fill" style="width:86%;background:#00cc44;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>JPA / Hibernate</span><span>84%</span></div><div class="skill-track"><div class="skill-fill" style="width:84%;background:#00cc44;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>Jakarta EE / JSP</span><span>80%</span></div><div class="skill-track"><div class="skill-fill" style="width:80%;background:#00cc44;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>REST APIs</span><span>86%</span></div><div class="skill-track"><div class="skill-fill" style="width:86%;background:#00cc44;"></div></div></div>
+    </div>
+    <div class="skill-section">
+      <div class="skill-cat">// DATABASES & TOOLS</div>
+      <div class="skill-row"><div class="skill-label-row"><span>MySQL / JDBC</span><span>84%</span></div><div class="skill-track"><div class="skill-fill" style="width:84%;background:#ffcc00;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>Git / Maven</span><span>82%</span></div><div class="skill-track"><div class="skill-fill" style="width:82%;background:#ffcc00;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>Docker / Tomcat</span><span>78%</span></div><div class="skill-track"><div class="skill-fill" style="width:78%;background:#ffcc00;"></div></div></div>
+    </div>
+    <div class="skill-section">
+      <div class="skill-cat">// AI & PATTERNS</div>
+      <div class="skill-row"><div class="skill-label-row"><span>TensorFlow / CNN</span><span>76%</span></div><div class="skill-track"><div class="skill-fill" style="width:76%;background:#cc88ff;"></div></div></div>
+      <div class="skill-row"><div class="skill-label-row"><span>MVC / DAO / DTO</span><span>84%</span></div><div class="skill-track"><div class="skill-fill" style="width:84%;background:#cc88ff;"></div></div></div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel">MODE: JOB READY</div>
+    <div class="status-panel">RAM 6.2 GB</div>
+  </div>
+</div>
+
+<!-- ===== RADAR ===== -->
+<div class="window" id="radarWin" style="width:420px;top:80px;left:120px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'radarWin')">
+    <span class="win-icon-sm">📊</span>
+    <div class="win-title">SKILL_ANALYSIS.EXE</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('radarWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('radarWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('radarWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body" style="background:#000a00;">
+    <div class="radar-wrap">
+      <div class="radar-header"><span style="font-size:22px;">📊</span><span class="radar-header-title">SKILL ANALYSIS SYSTEM</span></div>
+      <div id="radarBars"></div>
+      <div class="radar-status-bar" id="radarStatusBar"></div>
+    </div>
+  </div>
+  <div class="win-statusbar" style="background:#000a00;border-top-color:#003300;">
+    <div class="status-panel" style="color:#00ff00;border-color:#003300;background:#000500;">6 DOMAINS SCANNED</div>
+    <div class="status-panel" style="color:#00ff00;border-color:#003300;background:#000500;">STATUS: OPTIMAL</div>
+  </div>
+</div>
+
+<!-- ===== PROJECTS ===== -->
+<div class="window" id="projectsWin" style="width:460px;top:80px;left:130px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'projectsWin')">
+    <span class="win-icon-sm">📁</span>
+    <div class="win-title">PROJECTS — /home/shreenidhi/work</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('projectsWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('projectsWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('projectsWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-menubar"><span class="win-menu-item">File</span><span class="win-menu-item">View</span></div>
+  <div class="win-body">
+    <div class="prompt-line"><span>root@shreenidhi:~$</span> ls -la ./projects/</div>
+    <div class="project-card">
+      <div class="project-name">🛒 E-Commerce REST API</div>
+      <div class="project-company">Tap Academy Internship · 02/2026 → Present</div>
+      <div class="project-desc">RESTful backend with product catalogue, cart, order management, transactional operations, DTO pattern, MVC architecture, BigDecimal financial precision.</div>
+      <span class="tag g">Spring Boot</span><span class="tag b">JPA</span><span class="tag a">MySQL</span><span class="tag">Hibernate</span><span class="tag">Maven</span>
+      <div style="margin-top:6px;"><a class="project-link" href="https://github.com/SHREENIDHIMS" target="_blank">📂 GitHub</a></div>
+    </div>
+    <div class="project-card">
+      <div class="project-name">🍽️ OnlyFoods — Food Delivery</div>
+      <div class="project-company">Tap Academy Internship · 12/2025 → 2026</div>
+      <div class="project-desc">Full-stack food delivery with session auth, restaurant browsing, cart, checkout, saved addresses, BCrypt hashing, JDBC DAO, responsive dark/light UI.</div>
+      <span class="tag g">Jakarta EE</span><span class="tag b">Servlets</span><span class="tag">JSP</span><span class="tag a">MySQL</span><span class="tag p">BCrypt</span>
+      <div style="margin-top:6px;"><a class="project-link" href="https://github.com/SHREENIDHIMS" target="_blank">📂 GitHub</a></div>
+    </div>
+    <div class="project-card">
+      <div class="project-name">🌱 Smart AgriBot — AI Crop Disease</div>
+      <div class="project-company">GITAM University · 09/2024 → 2025</div>
+      <div class="project-desc">Real-time crop disease detection via CNN with 90%+ accuracy. Image-upload diagnosis, Raspberry Pi, IoT sensors, cloud-backed model training.</div>
+      <span class="tag p">TensorFlow</span><span class="tag">CNN</span><span class="tag b">OpenCV</span><span class="tag a">Raspberry Pi</span><span class="tag">IoT</span>
+      <div style="margin-top:6px;"><a class="project-link" href="https://github.com/SHREENIDHIMS" target="_blank">📂 GitHub</a></div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel">3 projects</div>
+    <div class="status-panel">github.com/SHREENIDHIMS</div>
+  </div>
+</div>
+
+<!-- ===== EXPERIENCE ===== -->
+<div class="window" id="expWin" style="width:440px;top:90px;left:160px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'expWin')">
+    <span class="win-icon-sm">🏆</span>
+    <div class="win-title">CAREER.LOG — Experience</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('expWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('expWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('expWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body">
+    <div class="prompt-line"><span>root@shreenidhi:~$</span> cat career.log</div>
+    <div class="exp-item">
+      <div class="exp-company">Tap Academy, Bengaluru</div>
+      <div class="exp-role">Backend Intern — E-Commerce REST API</div>
+      <div class="exp-period">02/2026 → Present</div>
+      <div class="exp-desc">Spring Boot e-commerce backend — cart, orders, catalogue, DTO, JPA, BigDecimal financial precision.</div>
+    </div>
+    <div class="exp-item">
+      <div class="exp-company">Tap Academy, Bengaluru</div>
+      <div class="exp-role">Full-Stack Intern — OnlyFoods</div>
+      <div class="exp-period">12/2025 → 2026</div>
+      <div class="exp-desc">Jakarta EE food delivery app — session auth, BCrypt, JDBC DAO, cart, checkout, responsive theming.</div>
+    </div>
+    <div class="exp-item">
+      <div class="exp-company">Aikyam</div>
+      <div class="exp-role">Community Volunteer</div>
+      <div class="exp-period">2021 → Present · Mysuru</div>
+      <div class="exp-desc">Road-cleaning drives, environmental awareness, community programs.</div>
+    </div>
+    <div class="exp-item" style="border-left-color:#333388;">
+      <div class="exp-company" style="color:#8888aa;">GITAM University, Bengaluru</div>
+      <div class="exp-role" style="color:#c8c8ff;">B.Tech — Computer Science & Engineering</div>
+      <div class="exp-period">2021 → 2025 · CGPA 7.08/10</div>
+    </div>
+    <div class="exp-item" style="border-left-color:#333388;">
+      <div class="exp-company" style="color:#8888aa;">Nisarga PU College</div>
+      <div class="exp-role" style="color:#c8c8ff;">12th Grade — Science</div>
+      <div class="exp-period">2019 → 2021 · 76%</div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel">2025 Graduate</div>
+    <div class="status-panel">Entry-Level Ready</div>
+  </div>
+</div>
+
+<!-- ===== FILE MANAGER ===== -->
+<div class="window" id="fileWin" style="width:540px;top:60px;left:80px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'fileWin')">
+    <span class="win-icon-sm">🏠</span>
+    <div class="win-title" id="fileWinTitle">FILE_MANAGER.EXE — Home</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('fileWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('fileWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('fileWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-menubar">
+    <span class="win-menu-item" id="fileBackBtn" onclick="fileGoBack()">← Back</span>
+    <span class="win-menu-item">File</span>
+    <span class="win-menu-item">Edit</span>
+    <span class="win-menu-item">View</span>
+  </div>
+  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <div style="display:flex;align-items:center;gap:4px;padding:3px 6px;background:#c0c0c0;border-bottom:1px solid #808080;">
+      <span style="font-family:var(--font-mono);font-size:10px;color:#000080;">Address:</span>
+      <div class="file-addr" id="fileAddr">C:\Home</div>
+    </div>
+    <div class="file-layout">
+      <div class="file-sidebar">
+        <div class="file-sidebar-item active" id="sb-home" onclick="fileNav('home')"><span>🏠</span>Home</div>
+        <div class="file-sidebar-item" id="sb-projects" onclick="fileNav('projects')"><span>📁</span>Projects</div>
+        <div class="file-sidebar-item" id="sb-games" onclick="fileNav('games')"><span>🎮</span>Games</div>
+        <div class="file-sidebar-item" id="sb-system" onclick="fileNav('system')"><span>⚙</span>System</div>
+      </div>
+      <div class="file-content" id="fileContent"></div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel" id="fileStatus">6 objects</div>
+    <div class="status-panel" id="filePathStatus">C:\Home</div>
+  </div>
+</div>
+
+<!-- ===== AI TOOLS ===== -->
+<div class="window" id="aiWin" style="width:480px;top:80px;left:320px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'aiWin')">
+    <span class="win-icon-sm">🤖</span>
+    <div class="win-title">AI_TOOLS.CFG — Loaded Stack</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('aiWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('aiWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('aiWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body">
+    <div class="prompt-line"><span>root@shreenidhi:~$</span> cat ai_tools.cfg</div>
+    <div class="ai-grid">
+      <div class="ai-card"><div class="ai-name">Claude Code</div><div class="ai-desc">Agentic coding, refactors, repo navigation</div></div>
+      <div class="ai-card"><div class="ai-name">ChatGPT</div><div class="ai-desc">Research, planning, debugging, docs</div></div>
+      <div class="ai-card"><div class="ai-name">Lovable</div><div class="ai-desc">Rapid app prototyping and UI generation</div></div>
+      <div class="ai-card"><div class="ai-name">n8n</div><div class="ai-desc">Automation flows, webhooks, integrations</div></div>
+      <div class="ai-card"><div class="ai-name">Firebase</div><div class="ai-desc">Auth, hosting, realtime backends</div></div>
+      <div class="ai-card"><div class="ai-name">Supabase</div><div class="ai-desc">Postgres backend, auth, storage</div></div>
+      <div class="ai-card"><div class="ai-name">GitHub Copilot</div><div class="ai-desc">IDE code completion, pair programming</div></div>
+      <div class="ai-card"><div class="ai-name">Cursor</div><div class="ai-desc">AI-first coding and codebase chat</div></div>
+      <div class="ai-card"><div class="ai-name">Vercel</div><div class="ai-desc">Frontend deployment and serverless</div></div>
+      <div class="ai-card"><div class="ai-name">Netlify</div><div class="ai-desc">Static app deployment and previews</div></div>
+      <div class="ai-card"><div class="ai-name">PostgreSQL</div><div class="ai-desc">Relational DB design and querying</div></div>
+      <div class="ai-card"><div class="ai-name">Docker, Docker Networks</div><div class="ai-desc">Containerization and deployment</div></div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel">12 tools loaded</div>
+    <div class="status-panel">AI workflow: READY</div>
+  </div>
+</div>
+
+<!-- ===== CONTACT ===== -->
+<div class="window" id="contactWin" style="width:380px;top:80px;left:200px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'contactWin')">
+    <span class="win-icon-sm">📧</span>
+    <div class="win-title">CONTACT.SH — Reach Out</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('contactWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('contactWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('contactWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body">
+    <div class="prompt-line"><span>root@shreenidhi:~$</span> ./contact.sh --list</div>
+    <ul class="contact-list">
+      <li><span class="c-icon">📧</span><span class="c-label">Email</span><a href="https://mail.google.com/mail/u/0/#inbox?compose=new" class="c-val">nshreenidhi655@gmail.com</a></li>
+      <li><span class="c-icon">🔗</span><span class="c-label">LinkedIn</span><a href="https://linkedin.com/in/shreenidhi-m03" target="_blank" class="c-val">in/shreenidhi-m03</a></li>
+      <li><span class="c-icon">🐙</span><span class="c-label">GitHub</span><a href="https://github.com/SHREENIDHIMS" target="_blank" class="c-val">github.com/SHREENIDHIMS</a></li>
+      <li><span class="c-icon">📞</span><span class="c-label">Phone</span><a href="tel:+918296133950" class="c-val">+91 82961 33950</a></li>
+      <li><span class="c-icon">📍</span><span class="c-label">Location</span><span class="c-val">Bengaluru, India</span></li>
+    </ul>
+    <div style="margin-top:12px;padding:8px;background:#00006a;border:1px solid #00aa00;">
+      <div style="font-family:var(--font-mono);font-size:9px;color:#8888aa;margin-bottom:4px;">// availability</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:#00ff00;">✓ Open to entry-level software roles</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:#00ffff;margin-top:3px;">→ Backend / full-stack development</div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel"><div class="status-dot"></div> AVAILABLE</div>
+  </div>
+</div>
+
+<!-- ===== DISPLAY SETTINGS ===== -->
+<div class="window" id="displayWin" style="width:440px;top:80px;left:200px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'displayWin')">
+    <span class="win-icon-sm">🖥</span>
+    <div class="win-title">DISPLAY.CPL — Properties</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('displayWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('displayWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('displayWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-menubar"><span class="win-menu-item">Themes</span><span class="win-menu-item">Effects</span></div>
+  <div class="win-body">
+    <div class="disp-section">
+      <span class="disp-label">OS Theme Color</span>
+      <div class="theme-row">
+        <div class="theme-sw on" id="theme-blue" style="background:linear-gradient(180deg,#0000b0,#000060);" onclick="applyTheme('blue')"><span style="color:#00ff00;">Blue</span></div>
+        <div class="theme-sw" id="theme-amber" style="background:linear-gradient(180deg,#402000,#201000);" onclick="applyTheme('amber')"><span style="color:#ffcc00;">Amber</span></div>
+        <div class="theme-sw" id="theme-red" style="background:linear-gradient(180deg,#400010,#200008);" onclick="applyTheme('red')"><span style="color:#ff4444;">Red</span></div>
+        <div class="theme-sw" id="theme-green" style="background:linear-gradient(180deg,#003020,#001510);" onclick="applyTheme('green')"><span style="color:#00ff88;">Green</span></div>
+        <div class="theme-sw" id="theme-purple" style="background:linear-gradient(180deg,#200040,#100020);" onclick="applyTheme('purple')"><span style="color:#cc88ff;">Purple</span></div>
+      </div>
+    </div>
+    <div class="disp-section">
+      <span class="disp-label">Animated Wallpaper</span>
+      <div class="wp-grid" id="wpGrid"></div>
+    </div>
+    <div class="disp-section">
+      <span class="disp-label">Visual Effects</span>
+      <div class="disp-toggle">
+        <span class="disp-toggle-label">CRT Scanlines</span>
+        <button class="toggle-btn on" id="btnScanlines" onclick="toggleScanlines()">ON</button>
+      </div>
+      <div class="disp-toggle">
+        <span class="disp-toggle-label">Sound Effects</span>
+        <button class="toggle-btn on" id="btnSound" onclick="toggleSound()">ON</button>
+      </div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:#8888aa;border-top:1px solid #333388;padding-top:6px;">
+      Resolution: <span style="color:#00ff00;" id="resInfo"></span> &nbsp;|&nbsp; Color: 32-bit &nbsp;|&nbsp; 60Hz
+    </div>
+  </div>
+</div>
+
+<!-- ===== CODE PLAYGROUND ===== -->
+<div class="window" id="codeWin" style="width:560px;top:90px;left:220px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'codeWin')">
+    <span class="win-icon-sm">💻</span>
+    <div class="win-title">CODE_PLAYGROUND.JS — JavaScript Runner</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('codeWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('codeWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('codeWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-menubar">
+    <span class="win-menu-item">File</span>
+    <span class="win-menu-item" onclick="runCode()">▶ Run</span>
+    <span class="win-menu-item" onclick="clearCode()">Clear</span>
+  </div>
+  <div class="win-body">
+    <div class="prompt-line"><span>CODE_PLAYGROUND.JS</span> — Write & Run JavaScript</div>
+    <textarea id="codeEditor" class="code-editor" spellcheck="false">// SM-OS Code Playground
+const greet = name => `Welcome to SM-OS, ${name}!`;
+console.log(greet("Visitor"));
+
+const skills = ['Java','Spring Boot','MySQL','TensorFlow'];
+console.log("Skills:", skills.join(', '));
+
+console.log("Sum:", [10,20,30,40].reduce((a,b)=>a+b,0));</textarea>
+    <div class="code-actions">
+      <button class="retro-btn" onclick="runCode()">▶ RUN</button>
+      <button class="retro-btn" onclick="clearCode()">⌫ CLEAR</button>
+    </div>
+    <div class="code-output" id="codeOut">OUTPUT: ready...</div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel">JavaScript</div>
+    <div class="status-panel">Sandboxed</div>
+  </div>
+</div>
+
+<!-- ===== CLOCK ===== -->
+<div class="window" id="clockWin" style="width:320px;top:80px;left:180px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'clockWin')">
+    <span class="win-icon-sm">🕐</span>
+    <div class="win-title">CLOCK.EXE</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('clockWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('clockWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('clockWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body" style="background:#000020;">
+    <div class="big-clock" id="bigClock">--:--:--</div>
+    <div class="big-date" id="bigDate">---</div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+  <div class="win-statusbar" style="background:#000a00;border-top-color:#003300;">
+    <div class="status-panel" style="color:#00ff00;border-color:#003300;background:#000500;">IST (UTC+5:30)</div>
+  </div>
+</div>
+
+<!-- ===== SNAKE ===== -->
+<div class="window" id="snakeWin" style="width:420px;top:60px;left:100px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'snakeWin')">
+    <span class="win-icon-sm">🐍</span>
+    <div class="win-title">SNAKE.EXE — Classic Arcade</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('snakeWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('snakeWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('snakeWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+    <div id="snakeStart" style="text-align:center;padding:20px;">
+      <div style="font-family:var(--font-vt);font-size:32px;color:#00ff00;letter-spacing:4px;">SNAKE v2.0</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:#8888aa;margin:8px 0;">Arrow keys / WASD to control</div>
+      <button class="retro-btn" onclick="startSnake()">[ START GAME ]</button>
+    </div>
+    <div id="snakePlay" style="display:none;flex-direction:column;align-items:center;gap:6px;">
+      <div class="snake-hud">
+        <span>SCORE: <span id="snakeScore">0</span></span>
+        <span>HI: <span id="snakeHi">0</span></span>
+        <span>LEN: <span id="snakeLen">1</span></span>
+      </div>
+      <div class="snake-board" id="snakeBoard">
+        <div class="snake-overlay" id="snakeOver">
+          <div>GAME OVER</div>
+          <div style="color:#ffcc00;font-size:17px;margin-top:5px;">Score: <span id="snakeFinal">0</span></div>
+          <button class="retro-btn" onclick="startSnake()">[ RETRY ]</button>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:#8888aa;">Walls wrap · Avoid your tail</div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel">ARROWS/WASD</div>
+    <div class="status-panel">+10 per food</div>
+  </div>
+</div>
+
+<!-- ===== MEMORY ===== -->
+<div class="window" id="memoryWin" style="width:330px;top:90px;left:180px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'memoryWin')">
+    <span class="win-icon-sm">🃏</span>
+    <div class="win-title">MEMORY.EXE — Match Pairs</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('memoryWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('memoryWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('memoryWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-body">
+    <div style="text-align:center;margin-bottom:8px;">
+      <span style="font-family:var(--font-vt);font-size:20px;color:#00ff00;">MEMORY.EXE</span>
+      <div style="font-family:var(--font-mono);font-size:10px;color:#8888aa;">Match all pairs · Fewer moves wins</div>
+      <button class="retro-btn" onclick="startMemory()" style="margin-top:6px;">[ NEW GAME ]</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-family:var(--font-vt);font-size:16px;color:#ffcc00;">
+      <span>MOVES: <span id="memMoves">0</span></span>
+      <span>LEFT: <span id="memLeft">8</span></span>
+    </div>
+    <div class="mem-grid" id="memGrid"></div>
+  </div>
+</div>
+
+<!-- ===== RECYCLE BIN (FIX: was missing HTML) ===== -->
+<div class="window" id="recycleWin" style="width:360px;top:100px;left:150px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'recycleWin')">
+    <span class="win-icon-sm">🗑</span>
+    <div class="win-title">RECYCLE BIN</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('recycleWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('recycleWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('recycleWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-menubar"><span class="win-menu-item">File</span><span class="win-menu-item">Edit</span><span class="win-menu-item" onclick="showNotif('Recycle Bin','Bin is already empty.')">Empty Bin</span></div>
+  <div class="win-body" style="display:flex;align-items:center;justify-content:center;min-height:160px;">
+    <div class="recycle-empty">
+      <div class="recycle-empty-icon">🗑️</div>
+      <div class="recycle-empty-msg">Recycle Bin is Empty</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:#8888aa;margin-top:8px;">No regrets. Only commits.</div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel">0 objects</div>
+    <div class="status-panel">0 bytes</div>
+  </div>
+</div>
+
+<!-- ===== BROWSER (FIX: was missing HTML) ===== -->
+<div class="window" id="browserWin" style="width:560px;top:70px;left:110px;">
+  <div class="win-titlebar" onmousedown="startDrag(event,'browserWin')">
+    <span class="win-icon-sm">🌐</span>
+    <div class="win-title">SM-BROWSER v1.0 — Internet Explorer 99</div>
+    <div class="win-controls">
+      <button class="win-btn" onclick="minimizeWin('browserWin')">_</button>
+      <button class="win-btn" onclick="maximizeWin('browserWin')">□</button>
+      <button class="win-btn cls" onclick="closeWin('browserWin')">✕</button>
+    </div>
+  </div>
+  <div class="win-menubar"><span class="win-menu-item">File</span><span class="win-menu-item">View</span><span class="win-menu-item">Favorites</span></div>
+  <div class="browser-bar">
+    <span style="font-family:var(--font-mono);font-size:10px;color:#000080;">Address:</span>
+    <input class="browser-input" id="browserInput" value="https://github.com/SHREENIDHIMS" readonly>
+    <button class="browser-go" onclick="browserGo()">Go ▶</button>
+  </div>
+  <div class="browser-iframe-wrap" style="min-height:280px;">
+    <div style="text-align:center;padding:20px;">
+      <div style="font-family:var(--font-vt);font-size:28px;color:#00ff00;margin-bottom:10px;">🌐 SM-BROWSER</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:#8888aa;margin-bottom:16px;">Quick-navigate to Shreenidhi's profiles</div>
+      <div class="browser-links">
+        <button class="browser-link-btn" onclick="browserOpen('https://github.com/SHREENIDHIMS')">🐙 GitHub</button>
+        <button class="browser-link-btn" onclick="browserOpen('https://linkedin.com/in/shreenidhi-m03')">🔗 LinkedIn</button>
+        <button class="browser-link-btn" onclick="browserOpen('https://mail.google.com/mail/u/0/#inbox?compose=new')">📧 Email</button>
+        <button class="browser-link-btn" onclick="browserOpen('Shreenidhi_M_Resume.pdf')">📄 Resume</button>
+      </div>
+    </div>
+  </div>
+  <div class="win-statusbar">
+    <div class="status-panel"><div class="status-dot"></div> Connected</div>
+    <div class="status-panel" id="browserStatus">Ready</div>
+  </div>
+</div>
+
+<!-- ===== CONTEXT MENU ===== -->
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-item" onclick="ctxDo('refresh')">🔄 Refresh Desktop</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="ctxDo('display')">🖥 Display Properties</div>
+  <div class="ctx-item" onclick="ctxDo('terminal')">▶ Open Terminal</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="ctxDo('about')">ℹ About SM-OS</div>
+</div>
+
+<!-- ===== TASKBAR ===== -->
+<div class="taskbar">
+  <button class="start-btn" id="startBtn" onclick="toggleStart()">⊞ START</button>
+  <div class="tb-sep"></div>
+  <div class="tb-apps" id="tbApps"></div>
+  <div class="tb-tray">
+    <span class="tb-tray-icon" id="soundIcon" onclick="toggleSound()" title="Sound">🔊</span>
+    <span class="tb-tray-icon" onclick="openWin('clockWin')" title="Clock">🕐</span>
+    <span class="tb-clock" id="tbClock">--:--</span>
+  </div>
+</div>
+
+<!-- ===== START MENU ===== -->
+<div class="start-menu" id="startMenu">
+  <div class="sm-header">⊞ SM-OS v2.0</div>
+  <button class="sm-item" onclick="launchStart('termWin')">🖥 Terminal</button>
+  <button class="sm-item" onclick="launchStart('aboutWin')">👤 About Me</button>
+  <button class="sm-item" onclick="launchStart('skillsWin')">⚙ Tech Stack</button>
+  <button class="sm-item" onclick="launchStart('radarWin')">📊 Skill Analysis</button>
+  <button class="sm-item" onclick="launchStart('projectsWin')">📁 Projects</button>
+  <button class="sm-item" onclick="launchStart('expWin')">🏆 Experience</button>
+  <button class="sm-item" onclick="launchStart('aiWin')">🤖 AI Tools</button>
+  <button class="sm-item" onclick="launchStart('contactWin')">📧 Contact</button>
+  <button class="sm-item" onclick="launchStart('fileWin')">📁 File Manager</button>
+  <button class="sm-item" onclick="launchStart('displayWin')">🖥 Display Settings</button>
+  <button class="sm-item" onclick="launchStart('codeWin')">💻 Code Playground</button>
+  <button class="sm-item" onclick="launchStart('clockWin')">🕐 Clock</button>
+  <button class="sm-item" onclick="launchStart('browserWin')">🌐 Browser</button>
+  <div class="sm-sep"></div>
+  <button class="sm-item" onclick="launchStart('snakeWin')">🐍 Snake</button>
+  <button class="sm-item" onclick="launchStart('memoryWin')">🃏 Memory</button>
+  <div class="sm-sep"></div>
+  <button class="sm-item" onclick="resumeDownload()">📄 Resume</button>
+  <div class="sm-sep"></div>
+  <button class="sm-item" onclick="shutdownOS()" style="color:#ff8888;">⏻ Shut Down</button>
+</div>
+
+<script>
+// ============================================================
+// SM-OS v2.0 — FIXED ENGINE
+// Fixes applied:
+//   1. recycleWin + browserWin HTML added
+//   2. onclick overwrite in file items fixed (single handler)
+//   3. startSnake() called only AFTER desktop visible
+//   4. Single clock interval (no double-init)
+//   5. startMemory only called from openWin, not bare at load
+//   6. Audio errors caught gracefully
+//   7. wpCanvas re-renders on resize
+//   8. resumeDownload in Start Menu + terminal command
+// ============================================================
+
+let zTop = 20;
+let muted = false;
+let audioCtx = null;
+let maximizedPrev = {};
+let currentWp = 0;
+let wpAnimId = null;
+let wpFrame = 0;
+let snakeHi = 0;
+let clockInterval = null;
+
+// ---- FIX 6: Audio with error handling ----
+let clickAudio = null;
+let gameAudio = null;
+try {
+  clickAudio = new Audio("finntastico-old-computer-click-152513.mp3");
+  clickAudio.volume = 0.4;
+  gameAudio = new Audio("freesound_community-vintage-game-sound-58050.mp3");
+  gameAudio.volume = 0.5;
+} catch(e) {}
+
+function safePlay(audio) {
+  if (!audio || muted) return;
+  try { audio.currentTime = 0; audio.play().catch(()=>{}); } catch(e) {}
+}
+
+// App metadata
+const apps = {
+  termWin:    { icon:'>_',  label:'TERMINAL' },
+  aboutWin:   { icon:'👤',  label:'ABOUT' },
+  skillsWin:  { icon:'⚙',   label:'SKILLS' },
+  radarWin:   { icon:'📊',  label:'RADAR' },
+  projectsWin:{ icon:'📁',  label:'PROJECTS' },
+  expWin:     { icon:'🏆',  label:'CAREER' },
+  fileWin:    { icon:'📁',  label:'FILES' },
+  aiWin:      { icon:'🤖',  label:'AI TOOLS' },
+  contactWin: { icon:'📧',  label:'CONTACT' },
+  displayWin: { icon:'🖥',  label:'DISPLAY' },
+  codeWin:    { icon:'💻',  label:'CODE' },
+  clockWin:   { icon:'🕐',  label:'CLOCK' },
+  snakeWin:   { icon:'🐍',  label:'SNAKE' },
+  memoryWin:  { icon:'🃏',  label:'MEMORY' },
+  recycleWin: { icon:'🗑',  label:'RECYCLE' },
+  browserWin: { icon:'🌐',  label:'BROWSER' }
+};
+
+const desktopIconList = [
+  { icon:'👤', label:'About.exe',   win:'aboutWin' },
+  { icon:'⚙',  label:'Skills.sys',  win:'skillsWin' },
+  { icon:'📊', label:'Radar.exe',   win:'radarWin' },
+  { icon:'📁', label:'Projects',    win:'projectsWin' },
+  { icon:'🏆', label:'Career.log',  win:'expWin' },
+  { icon:'>_', label:'Terminal',    win:'termWin' },
+  { icon:'🤖', label:'AI_Tools',    win:'aiWin' },
+  { icon:'📁', label:'Files',       win:'fileWin' },
+  { icon:'📧', label:'Contact',     win:'contactWin' },
+  { icon:'🖥', label:'Display',     win:'displayWin' },
+  { icon:'💻', label:'Code',        win:'codeWin' },
+  { icon:'🕐', label:'Clock',       win:'clockWin' },
+  { icon:'🐍', label:'Snake.exe',   win:'snakeWin' },
+  { icon:'🃏', label:'Memory.exe',  win:'memoryWin' },
+  { icon:'🗑', label:'Recycle Bin', win:'recycleWin' },
+  { icon:'🌐', label:'Browser',     win:'browserWin' },
+  { icon:'📄', label:'Resume',      win:'resumeDownload' }
+];
+
+function buildDesktopIcons() {
+  const el = document.getElementById('desktopIcons');
+  el.innerHTML = '';
+  desktopIconList.forEach(item => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:68px;padding:5px 2px;border:1px solid transparent;transition:all 0.12s;';
+    div.innerHTML = `<div style="font-size:26px;line-height:1;">${item.icon}</div><div style="font-family:var(--font-vt);font-size:13px;color:#fff;text-shadow:1px 1px 2px #000;text-align:center;word-break:break-word;">${item.label}</div>`;
+    // FIX 2: Single onclick, no overwrite
+    div.onclick = e => {
+      e.stopPropagation();
+      clickSnd();
+      document.querySelectorAll('#desktopIcons > div').forEach(d => { d.style.background=''; d.style.borderColor='transparent'; });
+      div.style.background = 'rgba(0,0,200,0.4)';
+      div.style.borderColor = 'rgba(200,200,255,0.6)';
+      if (item.win === 'resumeDownload') {
+        resumeDownload();
+      } else {
+        openWin(item.win);
+      }
+    };
+    div.onmouseenter = () => { if (!div.style.background || div.style.background === '') div.style.background = 'rgba(255,255,255,0.08)'; };
+    div.onmouseleave = () => { if (div.style.background === 'rgba(255,255,255, 0.08)' || div.style.background === 'rgba(255,255,255,0.08)') div.style.background = ''; };
+    el.appendChild(div);
+  });
+}
+
+function resumeDownload() {
+  window.open('Shreenidhi_M_Resume.pdf', '_blank');
+  showNotif('SM-OS', 'Opening Shreenidhi_M_Resume.pdf...');
+}
+
+// ===== SOUND =====
+function beep(freq=600, dur=0.06, type='square', vol=0.1) {
+  if (muted) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 0.6, audioCtx.currentTime + dur);
+    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + dur + 0.01);
+  } catch(e) {}
+}
+function clickSnd() { safePlay(clickAudio); }
+function openSnd()  { beep(440,0.07,'triangle',0.1); setTimeout(()=>beep(660,0.07,'triangle',0.09),70); }
+function closeSnd() { beep(330,0.06,'triangle',0.09); }
+function toggleSound() {
+  muted = !muted;
+  document.getElementById('soundIcon').textContent = muted ? '🔇' : '🔊';
+  document.getElementById('btnSound').textContent = muted ? 'OFF' : 'ON';
+  document.getElementById('btnSound').className = 'toggle-btn' + (muted ? '' : ' on');
+  if (!muted) clickSnd();
+}
+
+// ===== WINDOW MANAGEMENT =====
+function openWin(id) {
+  const w = document.getElementById(id);
+  if (!w) return;
+  openSnd();
+  w.classList.remove('minimized');
+  w.classList.add('open');
+  focusWin(id);
+  if (!w.dataset.placed) {
+    const keys = Object.keys(apps);
+    const idx = keys.indexOf(id);
+    const cascade = (idx % 6) * 18;
+    w.style.left = (parseInt(w.style.left || 80) + cascade) + 'px';
+    w.style.top  = (parseInt(w.style.top  || 80) + cascade) + 'px';
+    w.dataset.placed = '1';
+  }
+  updateTaskbar();
+  if (id === 'radarWin')   buildRadar();
+  if (id === 'clockWin')   buildCalendar();
+  if (id === 'displayWin') { document.getElementById('resInfo').textContent = window.innerWidth + '×' + window.innerHeight; renderWpThumbs(); }
+  // FIX 5: Memory only inits on open if grid is empty
+  if (id === 'memoryWin' && !document.getElementById('memGrid').children.length) startMemory(true);
+  if (id === 'fileWin')    renderFileManager();
+}
+
+function closeWin(id) {
+  closeSnd();
+  const w = document.getElementById(id);
+  w.classList.remove('open', 'focused', 'minimized');
+  delete maximizedPrev[id];
+  updateTaskbar();
+}
+
+function minimizeWin(id) {
+  clickSnd();
+  const w = document.getElementById(id);
+  w.classList.add('minimized');
+  w.classList.remove('focused');
+  updateTaskbar();
+}
+
+function maximizeWin(id) {
+  clickSnd();
+  const w = document.getElementById(id);
+  if (maximizedPrev[id]) {
+    const p = maximizedPrev[id];
+    w.style.left = p.left; w.style.top = p.top;
+    w.style.width = p.width; w.style.height = '';
+    delete maximizedPrev[id];
+  } else {
+    maximizedPrev[id] = { left:w.style.left, top:w.style.top, width:w.style.width };
+    w.style.left = '0'; w.style.top = '0';
+    w.style.width = '100vw';
+    w.style.height = 'calc(100vh - var(--taskbar-h))';
+  }
+}
+
+function focusWin(id) {
+  document.querySelectorAll('.window').forEach(w => w.classList.remove('focused'));
+  const w = document.getElementById(id);
+  if (w) { w.classList.add('focused'); w.style.zIndex = ++zTop; }
+  updateTaskbar();
+}
+
+function updateTaskbar() {
+  const bar = document.getElementById('tbApps');
+  bar.innerHTML = '';
+  Object.keys(apps).forEach(id => {
+    const w = document.getElementById(id);
+    if (!w) return;
+    const isOpen = w.classList.contains('open');
+    const isMini = w.classList.contains('minimized');
+    if (!isOpen && !isMini) return;
+    const btn = document.createElement('button');
+    btn.className = 'tb-btn' + (w.classList.contains('focused') ? ' active' : '');
+    btn.innerHTML = apps[id].icon + ' ' + apps[id].label;
+    btn.onclick = () => {
+      if (isMini) { w.classList.remove('minimized'); focusWin(id); updateTaskbar(); }
+      else if (w.classList.contains('focused')) { minimizeWin(id); }
+      else { focusWin(id); }
+    };
+    bar.appendChild(btn);
+  });
+}
+
+document.querySelectorAll('.window').forEach(w => {
+  w.addEventListener('mousedown', () => focusWin(w.id), true);
+});
+
+function toggleStart() {
+  clickSnd();
+  document.getElementById('startMenu').classList.toggle('open');
+}
+function launchStart(id) {
+  document.getElementById('startMenu').classList.remove('open');
+  openWin(id);
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#startMenu') && !e.target.closest('#startBtn'))
+    document.getElementById('startMenu').classList.remove('open');
+  if (!e.target.closest('#ctxMenu'))
+    document.getElementById('ctxMenu').classList.remove('open');
+});
+
+document.getElementById('desktop').addEventListener('contextmenu', e => {
+  e.preventDefault();
+  const ctx = document.getElementById('ctxMenu');
+  ctx.style.left = Math.min(e.clientX, window.innerWidth - 170) + 'px';
+  ctx.style.top  = Math.min(e.clientY, window.innerHeight - 150) + 'px';
+  ctx.classList.add('open');
+});
+document.getElementById('desktop').addEventListener('click', e => {
+  if (!e.target.closest('#desktopIcons > div'))
+    document.querySelectorAll('#desktopIcons > div').forEach(d => { d.style.background = ''; d.style.borderColor = 'transparent'; });
+});
+
+function ctxDo(a) {
+  document.getElementById('ctxMenu').classList.remove('open');
+  if (a === 'refresh') { renderWallpaper(currentWp); showNotif('SM-OS', 'Desktop refreshed.'); }
+  if (a === 'display')  openWin('displayWin');
+  if (a === 'terminal') openWin('termWin');
+  if (a === 'about')    openWin('aboutWin');
+}
+
+// ===== DRAG =====
+function startDrag(e, id) {
+  const w = document.getElementById(id);
+  focusWin(id);
+  const ox = e.clientX - w.offsetLeft, oy = e.clientY - w.offsetTop;
+  function mv(e) {
+    w.style.left = Math.max(0, Math.min(window.innerWidth - 40, e.clientX - ox)) + 'px';
+    w.style.top  = Math.max(0, Math.min(window.innerHeight - 40, e.clientY - oy)) + 'px';
+  }
+  function up() { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); }
+  document.addEventListener('mousemove', mv);
+  document.addEventListener('mouseup', up);
+}
+
+// ===== CLOCK — FIX 4: Single interval started once =====
+function updateClock() {
+  const d = new Date();
+  const hm  = d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true });
+  const hms = d.toLocaleTimeString('en-IN', { hour12:false });
+  document.getElementById('tbClock').textContent = hm;
+  const bc = document.getElementById('bigClock');
+  if (bc) bc.textContent = hms;
+  const bd = document.getElementById('bigDate');
+  if (bd) bd.textContent = d.toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+
+function buildCalendar() {
+  const g = document.getElementById('calGrid');
+  if (!g) return;
+  const d = new Date(), y = d.getFullYear(), m = d.getMonth(), tod = d.getDate();
+  const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  g.innerHTML = '';
+  days.forEach(dy => { const c = document.createElement('div'); c.className = 'cal-cell hdr'; c.textContent = dy; g.appendChild(c); });
+  const first = new Date(y, m, 1).getDay();
+  const dim   = new Date(y, m + 1, 0).getDate();
+  for (let i = 0; i < first; i++) { const c = document.createElement('div'); c.className = 'cal-cell other'; c.textContent = new Date(y, m, -first + i + 1).getDate(); g.appendChild(c); }
+  for (let i = 1; i <= dim; i++) { const c = document.createElement('div'); c.className = 'cal-cell' + (i === tod ? ' today' : ''); c.textContent = i; g.appendChild(c); }
+}
+
+// ===== RADAR =====
+function buildRadar() {
+  const skills = [
+    { label:'Frontend', pct:95, color:'#4488ff' },
+    { label:'Backend',  pct:80, color:'#00cc44' },
+    { label:'AI / ML',  pct:85, color:'#cc88ff' },
+    { label:'DevOps',   pct:70, color:'#ffcc00' },
+    { label:'Testing',  pct:75, color:'#00ffff' },
+    { label:'Cloud',    pct:78, color:'#ff8866' },
+  ];
+  const el = document.getElementById('radarBars');
+  if (!el) return;
+  const total = 20;
+  el.innerHTML = skills.map(s => {
+    const filled = Math.round((s.pct / 100) * total);
+    const segs = Array.from({ length:total }, (_,i) =>
+      `<div class="radar-seg${i < filled ? ' on' : ''}" style="${i < filled ? 'background:' + s.color + ';box-shadow:0 0 4px ' + s.color + '40;' : ''}"></div>`
+    ).join('');
+    return `<div class="radar-row"><div class="radar-label-row"><span class="radar-label">${s.label}</span><span class="radar-pct">${s.pct}%</span></div><div class="radar-bar">${segs}</div></div>`;
+  }).join('');
+  const sb = document.getElementById('radarStatusBar');
+  if (sb) sb.innerHTML = [
+    { label:'SYS',    val:'NOMINAL',   on:true  },
+    { label:'NET',    val:'ONLINE',    on:true  },
+    { label:'DB',     val:'CONNECTED', on:true  },
+    { label:'AI',     val:'LOADED',    on:true  },
+    { label:'API',    val:'READY',     on:true  },
+    { label:'DEPLOY', val:'STAGED',    on:false },
+  ].map(s => `<span class="radar-status-item${s.on ? ' on' : ''}">${s.label}: ${s.val}</span>`).join('');
+}
+
+// ===== FILE MANAGER — FIX 2: Single onclick handler =====
+const fileStructure = {
+  home: {
+    parent:null, path:'C:\\Home',
+    items:[
+      { name:'Projects',   icon:'📁', type:'folder',  target:'projects' },
+      { name:'Games',      icon:'🎮', type:'folder',  target:'games' },
+      { name:'System',     icon:'⚙',  type:'folder',  target:'system' },
+      { name:'About.txt',  icon:'📄', type:'win',     target:'aboutWin' },
+      { name:'Contact.sh', icon:'📋', type:'win',     target:'contactWin' },
+      { name:'Resume.pdf', icon:'📄', type:'resume',  target:null },
+    ]
+  },
+  projects: {
+    parent:'home', path:'C:\\Home\\Projects',
+    items:[
+      { name:'AI',         icon:'🧠', type:'folder', target:'proj-ai' },
+      { name:'Enterprise', icon:'🏢', type:'folder', target:'proj-enterprise' },
+      { name:'Web',        icon:'🌐', type:'folder', target:'proj-web' },
+    ]
+  },
+  'proj-ai': {
+    parent:'projects', path:'C:\\Home\\Projects\\AI',
+    items:[
+      { name:'SmartAgriBot', icon:'🌱', type:'project', target:{ title:'Smart AgriBot', desc:'Real-time crop disease detection with CNN and TensorFlow. 90%+ accuracy, Raspberry Pi integration, IoT sensors, cloud model training.', tags:['TensorFlow','CNN','OpenCV','Raspberry Pi','IoT'], github:'https://github.com/SHREENIDHIMS' }},
+      { name:'CNN_Models',   icon:'🤖', type:'project', target:{ title:'CNN Classification System', desc:'Deep learning image classification experiments using TensorFlow and Keras.', tags:['TensorFlow','Keras','Python','NumPy'], github:'https://github.com/SHREENIDHIMS' }},
+    ]
+  },
+  'proj-enterprise': {
+    parent:'projects', path:'C:\\Home\\Projects\\Enterprise',
+    items:[
+      { name:'EcommerceAPI', icon:'🛒', type:'project', target:{ title:'E-Commerce REST API', desc:'Spring Boot RESTful backend — product catalogue, cart, orders, DTO pattern, JPA relationships, BigDecimal precision.', tags:['Spring Boot','JPA','MySQL','Hibernate','Maven'], github:'https://github.com/SHREENIDHIMS' }},
+      { name:'DTO_Service',  icon:'📦', type:'project', target:{ title:'DTO Service Layer', desc:'Enterprise microservice communication system with clean DTO/DAO separation.', tags:['Java','Spring Boot','JPA','MVC'], github:'https://github.com/SHREENIDHIMS' }},
+    ]
+  },
+  'proj-web': {
+    parent:'projects', path:'C:\\Home\\Projects\\Web',
+    items:[
+      { name:'OnlyFoods',   icon:'🍽️', type:'project', target:{ title:'OnlyFoods — Food Delivery', desc:'Full-stack food delivery platform. Jakarta EE, session auth, BCrypt hashing, JDBC DAO, cart, checkout, responsive dark/light UI.', tags:['Jakarta EE','Servlets','JSP','MySQL','JDBC','BCrypt'], github:'https://github.com/SHREENIDHIMS' }},
+      { name:'SM_Portfolio',icon:'💻', type:'project', target:{ title:'SM-OS Portfolio', desc:'Retro OS-style interactive portfolio website built with vanilla HTML/CSS/JS.', tags:['HTML','CSS','JavaScript','Retro OS'], github:'https://github.com/SHREENIDHIMS' }},
+    ]
+  },
+  games: {
+    parent:'home', path:'C:\\Home\\Games',
+    items:[
+      { name:'Snake.exe',  icon:'🐍', type:'win', target:'snakeWin' },
+      { name:'Memory.exe', icon:'🃏', type:'win', target:'memoryWin' },
+      { name:'Code.js',    icon:'💻', type:'win', target:'codeWin' },
+    ]
+  },
+  system: {
+    parent:'home', path:'C:\\Home\\System',
+    items:[
+      { name:'Skills.sys',  icon:'⚙',  type:'win', target:'skillsWin' },
+      { name:'Career.log',  icon:'🏆', type:'win', target:'expWin' },
+      { name:'AI_Tools',    icon:'🤖', type:'win', target:'aiWin' },
+      { name:'Display.cpl', icon:'🖥', type:'win', target:'displayWin' },
+      { name:'Clock.exe',   icon:'🕐', type:'win', target:'clockWin' },
+      { name:'Terminal',    icon:'>_', type:'win', target:'termWin' },
+    ]
+  }
+};
+
+let currentFolder = 'home';
+let currentProjectDetail = null;
+
+function fileNav(folder) {
+  clickSnd();
+  currentProjectDetail = null;
+  currentFolder = folder;
+  renderFileManager();
+}
+
+function fileGoBack() {
+  clickSnd();
+  if (currentProjectDetail) { currentProjectDetail = null; renderFileManager(); return; }
+  const fs = fileStructure[currentFolder];
+  if (fs && fs.parent) { currentFolder = fs.parent; renderFileManager(); }
+}
+
+function renderFileManager() {
+  const fs = fileStructure[currentFolder];
+  if (!fs) return;
+  const addr       = document.getElementById('fileAddr');
+  const title      = document.getElementById('fileWinTitle');
+  const statusPath = document.getElementById('filePathStatus');
+  const fileStatus = document.getElementById('fileStatus');
+  const backBtn    = document.getElementById('fileBackBtn');
+  const content    = document.getElementById('fileContent');
+  const displayPath = currentProjectDetail ? fs.path + '\\' + currentProjectDetail.title : fs.path;
+  if (addr)       addr.textContent  = displayPath;
+  if (title)      title.textContent = 'FILE_MANAGER.EXE — ' + (currentFolder === 'home' ? 'Home' : currentFolder.replace('proj-','').replace('-',' '));
+  if (statusPath) statusPath.textContent = fs.path;
+  const canGoBack = (fs.parent !== null) || !!currentProjectDetail;
+  if (backBtn) { backBtn.style.color = canGoBack ? '#000080' : '#808080'; backBtn.style.cursor = canGoBack ? 'pointer' : 'default'; }
+  document.querySelectorAll('.file-sidebar-item').forEach(si => si.classList.remove('active'));
+  const sideMap = { home:'sb-home', projects:'sb-projects', 'proj-ai':'sb-projects', 'proj-enterprise':'sb-projects', 'proj-web':'sb-projects', games:'sb-games', system:'sb-system' };
+  const sbEl = document.getElementById(sideMap[currentFolder] || 'sb-home');
+  if (sbEl) sbEl.classList.add('active');
+  if (currentProjectDetail) {
+    const p = currentProjectDetail;
+    if (fileStatus) fileStatus.textContent = '1 item';
+    content.innerHTML = `<div style="padding:8px;"><div class="file-detail-card">
+      <div class="file-detail-title">${p.title}</div>
+      <div class="file-detail-desc">${p.desc}</div>
+      <div style="margin-bottom:8px;">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div><a class="project-link" href="${p.github}" target="_blank">📂 View on GitHub</a></div>
+      <div style="margin-top:10px;font-family:var(--font-mono);font-size:9px;color:#8888aa;">Press Back to return</div>
+    </div></div>`;
+    return;
+  }
+  if (fileStatus) fileStatus.textContent = fs.items.length + ' objects';
+  content.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'file-grid';
+  fs.items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'file-item';
+    el.innerHTML = `<div class="file-item-icon">${item.icon}</div><div class="file-item-name">${item.name}</div>`;
+    // FIX 2: Single clean handler, no overwrite
+    el.onclick = () => {
+      document.querySelectorAll('.file-item').forEach(fi => fi.classList.remove('selected'));
+      el.classList.add('selected');
+      clickSnd();
+      if (item.type === 'folder')  { fileNav(item.target); }
+      else if (item.type === 'win'){ openWin(item.target); }
+      else if (item.type === 'project') { currentProjectDetail = item.target; renderFileManager(); }
+      else if (item.type === 'resume')  { resumeDownload(); }
+    };
+    grid.appendChild(el);
+  });
+  content.appendChild(grid);
+}
+
+// ===== TERMINAL =====
+const termHistory = [];
+let termHistIdx = -1;
+
+const termCmds = {
+  help: () => [
+    { cls:'cyan',  t:'╔══════════════════════════════════╗' },
+    { cls:'cyan',  t:'║   SM-OS TERMINAL — Help           ║' },
+    { cls:'cyan',  t:'╚══════════════════════════════════╝' },
+    { cls:'green', t:'  about, skills, radar, projects' },
+    { cls:'green', t:'  experience, ai, contact, files' },
+    { cls:'green', t:'  code, clock, display, browser' },
+    { cls:'green', t:'  snake, memory, resume' },
+    { cls:'green', t:'  theme [blue|amber|red|green|purple]' },
+    { cls:'green', t:'  wallpaper [0-5]' },
+    { cls:'green', t:'  whoami, uname, date, ls, pwd, clear, exit' },
+  ],
+  whoami:     () => [{ cls:'green', t:'shreenidhi_m' }, { cls:'dim', t:'uid=1000(shreenidhi) gid=1000(developer)' }, { cls:'dim', t:'groups=java,spring,mysql,ai,gitam2025' }],
+  uname:      () => [{ cls:'dim',   t:'SM-OS 2.0 x86_64 GNU/Linux — VT323 Edition' }],
+  date:       () => [{ cls:'white', t:new Date().toString() }],
+  pwd:        () => [{ cls:'dim',   t:'/home/shreenidhi' }],
+  ls:         () => [
+    { cls:'amber', t:'drwxr-xr-x  about/' },
+    { cls:'amber', t:'drwxr-xr-x  projects/' },
+    { cls:'amber', t:'drwxr-xr-x  experience/' },
+    { cls:'amber', t:'drwxr-xr-x  games/' },
+    { cls:'green', t:'-rwxr-xr-x  terminal.sh' },
+    { cls:'green', t:'-rwxr-xr-x  contact.sh' },
+    { cls:'white', t:'-rw-r--r--  Shreenidhi_M_Resume.pdf' },
+  ],
+  clear:      () => { document.getElementById('termOutput').innerHTML = ''; return []; },
+  exit:       () => { closeWin('termWin'); return []; },
+  about:      () => { openWin('aboutWin');    return [{ cls:'cyan', t:'→ Opened ABOUT.EXE' }]; },
+  skills:     () => { openWin('skillsWin');   return [{ cls:'cyan', t:'→ Opened SKILLS.SYS' }]; },
+  radar:      () => { openWin('radarWin');    return [{ cls:'cyan', t:'→ Opened SKILL_ANALYSIS.EXE' }]; },
+  projects:   () => { openWin('projectsWin');return [{ cls:'cyan', t:'→ Opened PROJECTS' }]; },
+  experience: () => { openWin('expWin');      return [{ cls:'cyan', t:'→ Opened CAREER.LOG' }]; },
+  ai:         () => { openWin('aiWin');       return [{ cls:'cyan', t:'→ Opened AI_TOOLS.CFG' }]; },
+  contact:    () => { openWin('contactWin'); return [{ cls:'cyan', t:'→ Opened CONTACT.SH' }]; },
+  files:      () => { openWin('fileWin');     return [{ cls:'cyan', t:'→ Opened FILE_MANAGER.EXE' }]; },
+  code:       () => { openWin('codeWin');     return [{ cls:'cyan', t:'→ Opened CODE_PLAYGROUND.JS' }]; },
+  clock:      () => { openWin('clockWin');    return [{ cls:'cyan', t:'→ Opened CLOCK.EXE' }]; },
+  display:    () => { openWin('displayWin'); return [{ cls:'cyan', t:'→ Opened DISPLAY.CPL' }]; },
+  browser:    () => { openWin('browserWin'); return [{ cls:'cyan', t:'→ Opened SM-BROWSER' }]; },
+  snake:      () => { openWin('snakeWin');    return [{ cls:'cyan', t:'→ Launched SNAKE.EXE' }]; },
+  memory:     () => { openWin('memoryWin');   return [{ cls:'cyan', t:'→ Launched MEMORY.EXE' }]; },
+  // FIX 8: resume command in terminal
+  resume:     () => { resumeDownload(); return [{ cls:'cyan', t:'→ Opening Shreenidhi_M_Resume.pdf...' }]; },
+};
+
+function execTerm(raw) {
+  const parts = raw.trim().split(' ');
+  const cmd = parts[0].toLowerCase();
+  if (cmd === 'theme') {
+    const t = parts[1] || '';
+    if (['blue','amber','red','green','purple'].includes(t)) { applyTheme(t); return [{ cls:'green', t:'→ Theme set to ' + t }]; }
+    return [{ cls:'red', t:'Usage: theme [blue|amber|red|green|purple]' }];
+  }
+  if (cmd === 'wallpaper') {
+    const n = parseInt(parts[1]);
+    if (!isNaN(n) && n >= 0 && n < 6) { renderWallpaper(n); return [{ cls:'green', t:'→ Wallpaper: ' + wps[n].name }]; }
+    return [{ cls:'red', t:'Usage: wallpaper [0-5]' }, { cls:'dim', t:wps.map((w,i) => i + ': ' + w.name).join(' | ') }];
+  }
+  if (cmd === 'echo') return [{ cls:'white', t:parts.slice(1).join(' ') }];
+  const fn = termCmds[cmd];
+  return fn ? fn(raw) : [{ cls:'red', t:`bash: ${cmd}: command not found. Try 'help'` }];
+}
+
+const termInput = document.getElementById('termInput');
+termInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const cmd = termInput.value.trim();
+    termInput.value = '';
+    if (!cmd) return;
+    termHistory.unshift(cmd);
+    termHistIdx = -1;
+    const out = document.getElementById('termOutput');
+    const echo = document.createElement('div');
+    echo.className = 'term-line prompt';
+    echo.innerHTML = `<span style="color:#00ff00;">root@shreenidhi:~$</span>&nbsp;${cmd}`;
+    out.appendChild(echo);
+    const lines = execTerm(cmd);
+    lines.forEach(l => {
+      const d = document.createElement('div');
+      d.className = 'term-line ' + (l.cls || '');
+      d.textContent = l.t;
+      out.appendChild(d);
+    });
+    document.getElementById('termBody').scrollTop = 99999;
+  }
+  if (e.key === 'ArrowUp')   { termHistIdx = Math.min(termHistIdx + 1, termHistory.length - 1); termInput.value = termHistory[termHistIdx] || ''; e.preventDefault(); }
+  if (e.key === 'ArrowDown') { termHistIdx = Math.max(termHistIdx - 1, -1); termInput.value = termHistIdx >= 0 ? termHistory[termHistIdx] : ''; e.preventDefault(); }
+  if (e.key === 'Tab') e.preventDefault();
+});
+
+function termWelcome() {
+  const out = document.getElementById('termOutput');
+  out.innerHTML = '';
+  const lines = [
+    { cls:'',      t:'' },
+    { cls:'green', t:'root@shreenidhi:~$ cat welcome_message.txt' },
+    { cls:'',      t:'' },
+    { cls:'white', t:'Welcome to SM-OS [Version 2.0.2025]' },
+    { cls:'white', t:'(c) Shreenidhi M Corp. All rights reserved.' },
+    { cls:'',      t:'' },
+    { cls:'',      t:'__STATUS__' },
+    { cls:'',      t:'Memory: 640KB OK' },
+    { cls:'',      t:'Role: Entry-Level Software Developer' },
+    { cls:'',      t:'Location: Bengaluru, India' },
+    { cls:'',      t:'' },
+    { cls:'green', t:'root@shreenidhi:~$ sh ./init_portfolio.sh' },
+    { cls:'green', t:'Portfolio initialized successfully! ✓' },
+    { cls:'',      t:'' },
+    { cls:'dim',   t:"Type 'help' for commands. Try: about, projects, skills, snake" },
+  ];
+  lines.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'term-line ' + (l.cls || '');
+    if (l.t === '__STATUS__') {
+      d.innerHTML = 'System Status: <span style="color:#00ff00;">ONLINE</span>';
+    } else {
+      d.textContent = l.t;
+    }
+    out.appendChild(d);
+  });
+}
+
+// ===== CODE PLAYGROUND =====
+document.getElementById('codeEditor').addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = e.target.selectionStart;
+    e.target.value = e.target.value.substring(0, s) + '  ' + e.target.value.substring(e.target.selectionEnd);
+    e.target.selectionStart = e.target.selectionEnd = s + 2;
+  }
+});
+function runCode() {
+  clickSnd();
+  const logs = [];
+  const sc = {
+    log:   (...a) => logs.push(a.map(x => { try { return JSON.stringify(x); } catch(e) { return String(x); } }).join(' ')),
+    error: (...a) => logs.push('ERROR: ' + a.join(' ')),
+    warn:  (...a) => logs.push('WARN: ' + a.join(' ')),
+  };
+  try {
+    new Function('console', document.getElementById('codeEditor').value)(sc);
+    document.getElementById('codeOut').textContent = 'OUTPUT:\n\n' + (logs.length ? logs.join('\n') : '(no output)');
+  } catch(err) {
+    document.getElementById('codeOut').textContent = 'OUTPUT:\n\nERROR: ' + err.message;
+  }
+}
+function clearCode() { clickSnd(); document.getElementById('codeOut').textContent = 'OUTPUT: ready...'; }
+
+// ===== BROWSER =====
+function browserGo() {
+  clickSnd();
+  const url = document.getElementById('browserInput').value;
+  browserOpen(url);
+}
+function browserOpen(url) {
+  document.getElementById('browserStatus').textContent = 'Navigating...';
+  window.open(url, '_blank');
+  setTimeout(() => { document.getElementById('browserStatus').textContent = 'Done'; }, 800);
+}
+
+// ===== SNAKE — FIX 3: startSnake only called explicitly =====
+const SZ = 20, SPD = 160;
+let snake = [{ x:10, y:10 }], food = { x:5, y:5 }, sDir = 'RIGHT', sNextDir = 'RIGHT';
+let sScore = 0, sRunning = false, sOver = false, sTimer = null;
+
+function randFood(body) {
+  let f;
+  do { f = { x:Math.floor(Math.random() * SZ), y:Math.floor(Math.random() * SZ) }; }
+  while (body.some(p => p.x === f.x && p.y === f.y));
+  return f;
+}
+
+function renderSnake() {
+  const b = document.getElementById('snakeBoard');
+  if (!b) return;
+  b.querySelectorAll('.snake-cell').forEach(c => c.remove());
+  const px = 18;
+  const fe = document.createElement('div');
+  fe.className = 'snake-cell snake-food';
+  fe.style.left = food.x * px + 'px'; fe.style.top = food.y * px + 'px';
+  b.appendChild(fe);
+  snake.forEach((p, i) => {
+    const c = document.createElement('div');
+    c.className = 'snake-cell ' + (i === 0 ? 'snake-head' : 'snake-body');
+    c.style.left = p.x * px + 'px'; c.style.top = p.y * px + 'px';
+    b.appendChild(c);
+  });
+  document.getElementById('snakeScore').textContent = sScore;
+  document.getElementById('snakeLen').textContent   = snake.length;
+  document.getElementById('snakeFinal').textContent = sScore;
+  document.getElementById('snakeHi').textContent    = snakeHi;
+  document.getElementById('snakeOver').className = 'snake-overlay' + (sOver ? ' vis' : '');
+}
+
+function startSnake() {
+  snake = [{ x:10, y:10 }]; sDir = 'RIGHT'; sNextDir = 'RIGHT'; sScore = 0; sRunning = true; sOver = false;
+  food = randFood(snake);
+  document.getElementById('snakeStart').style.display = 'none';
+  document.getElementById('snakePlay').style.display  = 'flex';
+  clearInterval(sTimer);
+  sTimer = setInterval(() => {
+    if (!sRunning || sOver) return;
+    sDir = sNextDir;
+    const h = { ...snake[0] };
+    if      (sDir === 'UP')   h.y--;
+    else if (sDir === 'DOWN') h.y++;
+    else if (sDir === 'LEFT') h.x--;
+    else                      h.x++;
+    h.x = (h.x + SZ) % SZ; h.y = (h.y + SZ) % SZ;
+    if (snake.some(p => p.x === h.x && p.y === h.y)) {
+      sOver = true; sRunning = false;
+      if (sScore > snakeHi) snakeHi = sScore;
+      clearInterval(sTimer); beep(200, 0.3, 'sawtooth', 0.12);
+      renderSnake(); return;
+    }
+    snake.unshift(h);
+    if (h.x === food.x && h.y === food.y) {
+      sScore += 10; food = randFood(snake);
+      safePlay(gameAudio);
+    } else {
+      snake.pop();
+    }
+    renderSnake();
+  }, SPD);
+  renderSnake(); clickSnd();
+}
+
+document.addEventListener('keydown', e => {
+
+  // ===== SNAKE CONTROLS =====
+  const m = {
+    ArrowUp:'UP',
+    ArrowDown:'DOWN',
+    ArrowLeft:'LEFT',
+    ArrowRight:'RIGHT',
+
+    w:'UP',
+    s:'DOWN',
+    a:'LEFT',
+    d:'RIGHT',
+
+    W:'UP',
+    S:'DOWN',
+    A:'LEFT',
+    D:'RIGHT'
+  };
+
+  const dir = m[e.key];
+
+  const opp = {
+    UP:'DOWN',
+    DOWN:'UP',
+    LEFT:'RIGHT',
+    RIGHT:'LEFT'
+  };
+
+  // SNAKE ACTIVE
+  if(
+    dir &&
+    document
+      .getElementById('snakeWin')
+      .classList.contains('open')
+  ){
+
+    if(dir !== opp[sDir]){
+
+      sNextDir = dir;
+    }
+
+    e.preventDefault();
+  }
+
+  // ===== CTRL + T =====
+  if(
+    e.ctrlKey &&
+    e.key.toLowerCase() === 't'
+  ){
+
+    e.preventDefault();
+
+    openWin('termWin');
+
+    const input =
+      document.getElementById(
+        'liveTerminalInput'
+      );
+
+    if(input){
+      input.focus();
+    }
+  }
+
+  // ===== CTRL + E =====
+  if(
+    e.ctrlKey &&
+    e.key.toLowerCase() === 'e'
+  ){
+
+    e.preventDefault();
+
+    openWin('aboutWin');
+  }
+
+  // ===== ALT + P =====
+  if(
+    e.altKey &&
+    e.key.toLowerCase() === 'p'
+  ){
+
+    e.preventDefault();
+
+    openWin('projectsWin');
+  }
+
+  // ===== ALT + F4 =====
+  if(
+    e.altKey &&
+    e.key === 'F4'
+  ){
+
+    e.preventDefault();
+
+    const active =
+      document.querySelector(
+        '.window.focused'
+      );
+
+    if(active){
+
+      active.classList.remove('open');
+
+      active.style.display = 'none';
+    }
+  }
+
+});
+
+// ===== MEMORY =====
+let mCards = [], mFirst = null, mLocked = false, mMoves = 0, mMatched = 0;
+function startMemory(silent = false) {
+  if (!silent) clickSnd();
+  const sym = ['JS','AI','DB','API','UX','GIT','SQL','🤖'];
+  mCards = [...sym, ...sym].sort(() => Math.random() - 0.5).map((v, i) => ({ v, i, fl:false, ma:false }));
+  mFirst = null; mLocked = false; mMoves = 0; mMatched = 0;
+  renderMemory();
+}
+function renderMemory() {
+  const g = document.getElementById('memGrid');
+  if (!g) return;
+  g.innerHTML = '';
+  mCards.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'mem-card' + (c.fl ? ' flip' : '') + (c.ma ? ' match' : '');
+    b.textContent = c.v;
+    b.onclick = () => flipMem(c.i);
+    g.appendChild(b);
+  });
+  document.getElementById('memMoves').textContent = mMoves;
+  document.getElementById('memLeft').textContent  = 8 - mMatched;
+}
+function flipMem(i) {
+  if (mLocked) return;
+  const c = mCards[i];
+  if (!c || c.fl || c.ma) return;
+  clickSnd(); c.fl = true;
+  if (mFirst === null) { mFirst = i; renderMemory(); return; }
+  mMoves++;
+  const f = mCards[mFirst];
+  if (f.v === c.v) {
+    f.ma = true; c.ma = true; mMatched++; mFirst = null; renderMemory();
+    beep(660, 0.06, 'sine', 0.1);
+    if (mMatched === 8) { showNotif('MEMORY.EXE', '🎉 All pairs matched! Moves: ' + mMoves); beep(880, 0.1, 'sine', 0.12); }
+    return;
+  }
+  mLocked = true; renderMemory();
+  setTimeout(() => { f.fl = false; c.fl = false; mFirst = null; mLocked = false; renderMemory(); beep(200, 0.04, 'square', 0.07); }, 700);
+}
+
+// ===== THEMES =====
+function applyTheme(t) {
+  clickSnd();
+  const themes = {
+    blue:   { bg:'#0000aa', sur:'#000080', sur2:'#00008b', win:'#000090', acc:'#00ff00' },
+    amber:  { bg:'#402000', sur:'#301800', sur2:'#402000', win:'#301500', acc:'#ffcc00' },
+    red:    { bg:'#440010', sur:'#330008', sur2:'#440010', win:'#330010', acc:'#ff4444' },
+    green:  { bg:'#003020', sur:'#002015', sur2:'#003020', win:'#002015', acc:'#00ff88' },
+    purple: { bg:'#200040', sur:'#180030', sur2:'#200040', win:'#180030', acc:'#cc88ff' },
+  };
+  const th = themes[t] || themes.blue;
+  document.documentElement.style.setProperty('--bg',      th.bg);
+  document.documentElement.style.setProperty('--surface', th.sur);
+  document.documentElement.style.setProperty('--surface2',th.sur2);
+  document.documentElement.style.setProperty('--win-bg',  th.win);
+  document.documentElement.style.setProperty('--green',   th.acc);
+  document.documentElement.style.setProperty('--green2',  th.acc);
+  document.querySelectorAll('.theme-sw').forEach(s => s.classList.remove('on'));
+  const el = document.getElementById('theme-' + t);
+  if (el) el.classList.add('on');
+  showNotif('DISPLAY.CPL', 'Theme: ' + t.toUpperCase());
+}
+
+// ===== SCANLINES =====
+let scanlinesOn = true;
+function toggleScanlines() {
+  scanlinesOn = !scanlinesOn;
+  let st = document.getElementById('dynSt') || (() => { const s = document.createElement('style'); s.id = 'dynSt'; document.head.appendChild(s); return s; })();
+  st.textContent = scanlinesOn ? '' : 'body::after{opacity:0!important;}';
+  document.getElementById('btnScanlines').textContent = scanlinesOn ? 'ON' : 'OFF';
+  document.getElementById('btnScanlines').className   = 'toggle-btn' + (scanlinesOn ? ' on' : '');
+}
+
+// ===== WALLPAPERS =====
+const wps = [
+  { name:'Matrix',   fn:wpMatrix },
+  { name:'Starfield',fn:wpStars },
+  { name:'Plasma',   fn:wpPlasma },
+  { name:'Grid',     fn:wpGrid },
+  { name:'Nebula',   fn:wpNebula },
+  { name:'Circuit',  fn:wpCircuit },
+];
+
+function renderWallpaper(idx) {
+  const canvas = document.getElementById('wpCanvas');
+  if (!canvas) return;
+  canvas.width  = canvas.offsetWidth  || window.innerWidth;
+  canvas.height = canvas.offsetHeight || window.innerHeight;
+  if (wpAnimId) cancelAnimationFrame(wpAnimId);
+  currentWp = idx; wpFrame = 0;
+  function loop() { wps[idx].fn(canvas, canvas.getContext('2d'), wpFrame++); wpAnimId = requestAnimationFrame(loop); }
+  loop();
+}
+
+function wpMatrix(c,ctx,f){
+  const W=c.width,H=c.height;
+  if(!c._mc){c._mc=[];for(let i=0;i<Math.floor(W/14);i++)c._mc.push(Math.floor(Math.random()*H/14));}
+  ctx.fillStyle='rgba(0,0,20,0.1)';ctx.fillRect(0,0,W,H);
+  ctx.font='12px Share Tech Mono';
+  c._mc.forEach((y,x)=>{ctx.fillStyle=y===0?'#aaffaa':'rgba(0,200,50,0.8)';ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96|0),x*14,y*14);c._mc[x]=y*14>H&&Math.random()>0.975?0:y+1;});
+}
+function wpStars(c,ctx,f){
+  const W=c.width,H=c.height;
+  if(!c._st)c._st=Array.from({length:180},()=>({x:Math.random()*W,y:Math.random()*H,z:Math.random()*W,pz:0}));
+  ctx.fillStyle='rgba(0,0,15,0.25)';ctx.fillRect(0,0,W,H);
+  c._st.forEach(s=>{s.pz=s.z;s.z-=4;if(s.z<=0){s.x=Math.random()*W;s.y=Math.random()*H;s.z=W;s.pz=W;}
+  const sx=(s.x-W/2)*(W/s.z)+W/2,sy=(s.y-H/2)*(W/s.z)+H/2,px=(s.x-W/2)*(W/s.pz)+W/2,py=(s.y-H/2)*(W/s.pz)+H/2,a=1-s.z/W;
+  ctx.strokeStyle=`rgba(180,200,255,${a})`;ctx.lineWidth=Math.max(0.5,(1-s.z/W)*2.5);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(sx,sy);ctx.stroke();});
+}
+function wpPlasma(c,ctx,f){
+  const W=c.width,H=c.height,t=f*0.02;
+  const img=ctx.createImageData(Math.floor(W/4),Math.floor(H/4));
+  const W2=Math.floor(W/4),H2=Math.floor(H/4);
+  for(let y=0;y<H2;y++)for(let x=0;x<W2;x++){
+    const v=Math.sin(x*.3+t)+Math.sin(y*.3+t)+Math.sin((x+y)*.2+t)+Math.sin(Math.sqrt(x*x+y*y)*.3+t);
+    const i=(y*W2+x)*4;img.data[i]=(Math.sin(v*Math.PI)*127+127)|0;img.data[i+1]=(Math.sin(v*Math.PI+2)*127+127)|0;img.data[i+2]=(Math.sin(v*Math.PI+4)*127+127)|0;img.data[i+3]=200;
+  }
+  const tmp=document.createElement('canvas');tmp.width=W2;tmp.height=H2;tmp.getContext('2d').putImageData(img,0,0);ctx.drawImage(tmp,0,0,W,H);
+}
+function wpGrid(c,ctx,f){
+  const W=c.width,H=c.height,t=f*.6,gs=44;
+  ctx.fillStyle='rgba(0,0,20,0.18)';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,100,255,0.18)';ctx.lineWidth=1;
+  for(let x=(t%gs)-gs;x<W+gs;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=(t*.5%gs)-gs;y<H+gs;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  if(!c._gd)c._gd=Array.from({length:25},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*1.5,vy:(Math.random()-.5)*1.5}));
+  c._gd.forEach(d=>{d.x=(d.x+d.vx+W)%W;d.y=(d.y+d.vy+H)%H;ctx.fillStyle='rgba(0,180,255,.8)';ctx.beginPath();ctx.arc(d.x,d.y,2,0,Math.PI*2);ctx.fill();});
+}
+function wpNebula(c,ctx,f){
+  const W=c.width,H=c.height;
+  if(f===0||!c._nb){ctx.fillStyle='#000010';ctx.fillRect(0,0,W,H);
+  const cols=['rgba(80,0,180,','rgba(0,40,180,','rgba(180,0,80,'];
+  for(let i=0;i<5;i++){const g=ctx.createRadialGradient(Math.random()*W,Math.random()*H,0,Math.random()*W,Math.random()*H,200+Math.random()*200);const col=cols[Math.floor(Math.random()*cols.length)];g.addColorStop(0,col+'0.35)');g.addColorStop(1,col+'0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
+  c._nb=Array.from({length:250},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5,t:Math.random()*Math.PI*2}));c._nbBase=ctx.getImageData(0,0,W,H);}
+  if(f%3===0&&c._nbBase){ctx.putImageData(c._nbBase,0,0);c._nb.forEach(s=>{s.t+=.05;const a=Math.sin(s.t)*.5+.5;ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();});}
+}
+function wpCircuit(c,ctx,f){
+  const W=c.width,H=c.height;
+  if(f===0||!c._cr){ctx.fillStyle='#000a00';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(0,80,0,.6)';ctx.lineWidth=1;c._cr={paths:[],pulses:[]};
+  for(let i=0;i<40;i++){let x=Math.random()*W|0,y=Math.random()*H|0;ctx.beginPath();ctx.moveTo(x,y);for(let j=0;j<5;j++){if(Math.random()>.5)x=x+(Math.random()>.5?80:-80)|0;else y=y+(Math.random()>.5?80:-80)|0;ctx.lineTo(x,y);c._cr.paths.push({x,y});}ctx.stroke();ctx.fillStyle='rgba(0,150,0,.5)';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();}
+  c._cr.base=ctx.getImageData(0,0,W,H);}
+  if(c._cr.base)ctx.putImageData(c._cr.base,0,0);
+  if(f%20===0){const p=c._cr.paths[Math.floor(Math.random()*c._cr.paths.length)];if(p)c._cr.pulses.push({x:p.x,y:p.y,r:0,life:25});}
+  c._cr.pulses=c._cr.pulses.filter(p=>p.life>0);
+  c._cr.pulses.forEach(p=>{ctx.strokeStyle=`rgba(0,255,80,${p.life/25})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,Math.PI*2);ctx.stroke();p.r++;p.life--;});
+}
+
+function renderWpThumbs() {
+  const g = document.getElementById('wpGrid');
+  if (!g || g.children.length) return;
+  wps.forEach((wp, i) => {
+    const div = document.createElement('div');
+    div.className = 'wp-thumb' + (i === currentWp ? ' on' : '');
+    const cv = document.createElement('canvas'); cv.width = 120; cv.height = 48;
+    const ctx2 = cv.getContext('2d'); ctx2.fillStyle = '#000010'; ctx2.fillRect(0,0,120,48);
+    wp.fn(cv, ctx2, 0);
+    div.appendChild(cv);
+    const sp = document.createElement('span'); sp.className = 'wp-thumb-label'; sp.textContent = wp.name; div.appendChild(sp);
+    div.onclick = () => {
+      clickSnd();
+      document.querySelectorAll('.wp-thumb').forEach(t => t.classList.remove('on'));
+      div.classList.add('on');
+      renderWallpaper(i);
+      showNotif('DISPLAY.CPL', 'Wallpaper: ' + wp.name);
+    };
+    g.appendChild(div);
+  });
+}
+
+// ===== NOTIFICATION =====
+function showNotif(title, msg) {
+  const n = document.createElement('div');
+  n.className = 'notif';
+  n.innerHTML = `<div class="notif-title">${title}</div><div class="notif-msg">${msg}</div>`;
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 3200);
+}
+
+// ===== BOOT SEQUENCE =====
+const bootSeq = [
+  { t:'BIOS v3.14 — Shreenidhi M Systems Inc.',          cls:'' },
+  { t:'RAM CHECK.................. 8192 MB OK',           cls:'ok' },
+  { t:'SSD: C:\\ 500GB [HEALTHY]',                        cls:'ok' },
+  { t:'SSD: D:\\ Portfolio Archive [MOUNTED]',            cls:'' },
+  { t:'',                                                 cls:'' },
+  { t:'Loading SM-OS Kernel v2.0.2025...',                cls:'' },
+  { t:'[OK] Display: CRT_PHOSPHOR_MODE active',           cls:'ok' },
+  { t:'[OK] Network: ONLINE',                             cls:'ok' },
+  { t:'[OK] Java 17 | Spring Boot 3.x | MySQL 8.0',      cls:'ok' },
+  { t:'[OK] Python 3.11 | TensorFlow 2.x',               cls:'ok' },
+  { t:'[OK] AI Tools: Claude Code | ChatGPT | n8n',      cls:'warn' },
+  { t:'[OK] Wallpapers: 6 animated scenes loaded',        cls:'ok' },
+  { t:'[OK] Games: SNAKE.EXE | MEMORY.EXE',              cls:'ok' },
+  { t:'',                                                 cls:'' },
+  { t:'╔═══════════════════════════════════════╗',       cls:'warn' },
+  { t:'║  SM-OS v2.0 — All Systems Operational  ║',      cls:'warn' },
+  { t:'╚═══════════════════════════════════════╝',       cls:'warn' },
+  { t:'',                                                 cls:'' },
+  { t:'Launching desktop environment...',                 cls:'ok' },
+];
+
+function runBoot() {
+  const el    = document.getElementById('bootLines');
+  const fill  = document.getElementById('bootFill');
+  const label = document.getElementById('bootLabel');
+  let delay = 0;
+  bootSeq.forEach((line, idx) => {
+    delay += line.t ? 200 : 80;
+    setTimeout(() => {
+      const d = document.createElement('div');
+      d.className = 'boot-line ' + (line.cls || '');
+      d.textContent = line.t || ' ';
+      el.appendChild(d);
+      const pct = Math.round((idx + 1) / bootSeq.length * 100);
+      fill.style.width  = pct + '%';
+      label.textContent = 'LOADING... ' + pct + '%';
+      el.parentElement.scrollTop = 99999;
+    }, delay);
+  });
+  setTimeout(() => {
+    document.getElementById('bootScreen').classList.add('fade');
+    setTimeout(() => {
+      document.getElementById('bootScreen').classList.add('gone');
+      document.getElementById('welcomeScreen').classList.add('visible');
+    }, 700);
+  }, delay + 700);
+}
+
+// ===== WELCOME → PORTFOLIO =====
+function enterPortfolio() {
+  const ws = document.getElementById('welcomeScreen');
+  ws.classList.add('fade');
+  setTimeout(() => {
+    ws.classList.add('gone');
+    document.getElementById('desktop').classList.add('visible');
+    renderWallpaper(4);
+    buildDesktopIcons();
+    openWin('termWin');
+    setTimeout(() => {
+    startTerminalSequence();
+  }, 800);
+  }, 500);
+}
+
+// FIX 3: Snake launched AFTER desktop is ready
+function enterPortfolioAndSnake() {
+  const ws = document.getElementById('welcomeScreen');
+  ws.classList.add('fade');
+  setTimeout(() => {
+    ws.classList.add('gone');
+    document.getElementById('desktop').classList.add('visible');
+    renderWallpaper(4);
+    buildDesktopIcons();
+    setTimeout(() => {
+      openWin('snakeWin');
+      startSnake(); // safe: desktop + window both exist now
+    }, 300);
+  }, 500);
+}
+
+// ===== SHUTDOWN =====
+function shutdownOS() {
+  document.getElementById('startMenu').classList.remove('open');
+  beep(200, 0.4, 'sine', 0.12);
+  if (wpAnimId) cancelAnimationFrame(wpAnimId);
+  if (sTimer)   clearInterval(sTimer);
+  const bs = document.getElementById('bootScreen');
+  bs.classList.remove('fade','gone');
+  bs.style.cssText = 'opacity:1;visibility:visible;display:flex;';
+  document.getElementById('bootLines').innerHTML = `
+    <div class="boot-line ok"   style="opacity:1;">SM-OS shutting down...</div>
+    <div class="boot-line warn" style="opacity:1;margin-top:8px;">Closing all applications...</div>
+    <div class="boot-line"      style="opacity:1;">Saving session data...</div>
+    <div class="boot-line ok"   style="opacity:1;margin-top:8px;">Thank you for visiting! — Shreenidhi M</div>
+    <div class="boot-line"      style="opacity:1;margin-top:16px;font-size:18px;color:#00ff00;">📧 nshreenidhi655@gmail.com</div>
+    <div class="boot-line"      style="opacity:1;color:#00ff00;">🔗 linkedin.com/in/shreenidhi-m03</div>
+    <div class="boot-line"      style="opacity:1;color:#00ff00;">🐙 github.com/SHREENIDHIMS</div>
+    <div class="boot-line"      style="opacity:1;margin-top:12px;color:#8888aa;">Refresh the page to restart.</div>
+  `;
+  document.getElementById('bootFill').style.width  = '100%';
+  document.getElementById('bootLabel').textContent = 'POWERED OFF';
+}
+
+// ===== RESIZE — FIX 7: re-render wallpaper on resize =====
+window.addEventListener('resize', () => {
+  const c = document.getElementById('wpCanvas');
+  if (c) {
+    // Let the canvas resize then re-render
+    setTimeout(() => renderWallpaper(currentWp), 50);
+  }
+});
+
+// ===== INIT — FIX 4: Single clock interval =====
+document.addEventListener('DOMContentLoaded', () => {
+
+  runBoot();
+
+  updateClock();
+
+  clockInterval = setInterval(updateClock, 1000);
+  
+  // Wire focus on all windows
+  document.querySelectorAll('.window').forEach(w => {
+    w.addEventListener('mousedown', () => focusWin(w.id), true);
+  });
+  // FIX 5: Do NOT call startMemory here — only called from openWin
+});
+
+
+const clippyTips = [
+  "It looks like you're hiring a developer 👀",
+  "May I suggest Shreenidhi?",
+  "This portfolio was built with pure creativity ⚡",
+  "📁",
+  "The terminal contains hidden commands 👨‍💻",
+  "Need a frontend + backend developer? Here I am 🚀"
+];
+
+let tipIndex = 0;
+
+function nextTip() {
+  tipIndex = (tipIndex + 1) % clippyTips.length;
+
+  document.getElementById("clippyMessage").innerText =
+    clippyTips[tipIndex];
+}
+
+function closeClippy() {
+  document.getElementById("clippy").style.display = "none";
+}
+
+// DRAG SYSTEM
+function dragElement(elmnt){
+
+  const header = elmnt.querySelector(".clippy-header");
+
+  let pos1 = 0,
+      pos2 = 0,
+      pos3 = 0,
+      pos4 = 0;
+
+  header.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e){
+
+    e = e || window.event;
+    e.preventDefault();
+
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e){
+
+    e = e || window.event;
+    e.preventDefault();
+
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+
+    elmnt.style.top =
+      (elmnt.offsetTop - pos2) + "px";
+
+    elmnt.style.left =
+      (elmnt.offsetLeft - pos1) + "px";
+
+    elmnt.style.bottom = "auto";
+    elmnt.style.right = "auto";
+  }
+
+  function closeDragElement(){
+
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+const termOutput = document.getElementById("termOutput");
+
+async function typeLine(
+  text,
+  cls = "green",
+  speed = 20
+){
+
+  return new Promise(resolve => {
+
+    const div = document.createElement("div");
+
+    div.className = `term-line ${cls}`;
+
+    termOutput.appendChild(div);
+
+    let i = 0;
+
+    const typer = setInterval(() => {
+
+      if(i < text.length){
+
+        div.textContent += text[i];
+
+        i++;
+
+        termOutput.scrollTop =
+          termOutput.scrollHeight;
+
+      }else{
+
+        clearInterval(typer);
+
+        resolve();
+      }
+
+    }, speed);
+
+  });
+  
+}
+
+async function addGap(ms){
+  return new Promise(resolve =>
+    setTimeout(resolve, ms)
+  );
+}
+
+async function startTerminalSequence(){
+
+  termOutput.innerHTML = "";
+
+  await typeLine(
+    "root@shreenidhi:~$ cat welcome_message.txt",
+    "green",
+    18
+  );
+
+  await addGap(300);
+
+  await typeLine(
+    "Welcome to SM-OS [Version 2.0.2026]",
+    "white",
+    16
+  );
+
+  await typeLine(
+    "(c) Shreenidhi M. All rights reserved.",
+    "dim",
+    14
+  );
+
+  await addGap(250);
+
+
+
+termOutput.scrollTop =
+  termOutput.scrollHeight;
+
+  await typeLine(
+    "Memory: 640KB OK",
+    "white",
+    15
+  );
+
+  await typeLine(
+    "Role: Software Engineer & AI Systems Developer",
+    "white",
+    15
+  );
+
+  await typeLine(
+    "Specialization: Java • Spring Boot • AI/ML • Web • Prompts Engineering",
+    "white",
+    15
+  );
+
+  await typeLine(
+    "Location: Bengaluru, India",
+    "white",
+    15
+  );
+
+  await addGap(300);
+
+  await typeLine(
+    "root@shreenidhi:~$ sh ./init_portfolio.sh",
+    "green",
+    18
+  );
+
+  await addGap(250);
+
+  await typeLine(
+    "Initializing portfolio modules...",
+    "cyan",
+    14
+  );
+
+  await typeLine(
+    "Loading UI components...",
+    "cyan",
+    14
+  );
+
+  await typeLine(
+    "Mounting virtual desktop environment...",
+    "cyan",
+    14
+  );
+
+  await typeLine(
+    "Portfolio initialized successfully! ✓",
+    "green",
+    18
+  );
+
+  await addGap(250);
+
+  await typeLine(
+    "Type 'help' for commands. Shortcuts: Ctrl+E, Alt+F4(For Shutdown). Try hidden commands! 🥚",
+    "dim",
+    13
+  );
+
+  await addGap(200);
+
+  createTerminalInput();
+
+  setTimeout(showClippy, 2500);
+}
+
+function createTerminalInput(){
+
+  // REMOVE OLD ACTIVE INPUT
+  const oldInput =
+    document.getElementById(
+      "liveTerminalInput"
+    );
+
+  if(oldInput){
+
+    oldInput.removeAttribute("id");
+
+    oldInput.disabled = true;
+
+    oldInput.style.caretColor =
+      "transparent";
+  }
+
+  const row =
+    document.createElement("div");
+
+  row.className = "term-input-row";
+
+  row.innerHTML = `
+    <span class="term-prompt-span">
+      root@shreenidhi:~$
+    </span>
+
+    <input
+      id="liveTerminalInput"
+      class="term-input"
+      type="text"
+      spellcheck="false"
+      autocomplete="off"
+    />
+  `;
+
+  termOutput.appendChild(row);
+
+  const input =
+    document.getElementById(
+      "liveTerminalInput"
+    );
+
+  input.focus();
+
+  // KEEP CURSOR ALWAYS ACTIVE
+  input.addEventListener("blur", () => {
+    setTimeout(() => input.focus(), 0);
+  });
+
+  // HANDLE COMMAND ENTER
+  input.addEventListener(
+    "keydown",
+    function(e){
+
+      if(e.key === "Enter"){
+
+        const cmd =
+          input.value.trim();
+
+        handleTerminalCommand(cmd);
+
+      }
+    }
+  );
+
+  termOutput.scrollTop =
+    termOutput.scrollHeight;
+}
+
+function createTerminalInput(){
+
+  // REMOVE OLD ACTIVE INPUT
+  const oldInput =
+    document.getElementById(
+      "liveTerminalInput"
+    );
+
+  if(oldInput){
+
+    oldInput.removeAttribute("id");
+
+    oldInput.disabled = true;
+
+    oldInput.style.caretColor =
+      "transparent";
+  }
+
+  const row =
+    document.createElement("div");
+
+  row.className = "term-input-row";
+
+  row.innerHTML = `
+    <span class="term-prompt-span">
+      root@shreenidhi:~$
+    </span>
+
+    <input
+      id="liveTerminalInput"
+      class="term-input"
+      type="text"
+      spellcheck="false"
+      autocomplete="off"
+    />
+  `;
+
+  termOutput.appendChild(row);
+
+  const input =
+    document.getElementById(
+      "liveTerminalInput"
+    );
+
+  input.focus();
+
+  // KEEP CURSOR ACTIVE
+  input.addEventListener("blur", () => {
+    setTimeout(() => input.focus(), 0);
+  });
+
+  // HANDLE ENTER
+  input.addEventListener(
+    "keydown",
+    function(e){
+
+      if(e.key === "Enter"){
+
+        const cmd =
+          input.value.trim();
+
+        handleTerminalCommand(cmd);
+
+      }
+    }
+  );
+
+  termOutput.scrollTop =
+    termOutput.scrollHeight;
+}
+
+function handleTerminalCommand(cmd){
+
+  cmd = cmd.toLowerCase().trim();
+
+  const input =
+    document.getElementById(
+      "liveTerminalInput"
+    );
+
+  if(!input) return;
+
+  input.disabled = true;
+
+  input.style.caretColor =
+    "transparent";
+
+  const output =
+    document.createElement("div");
+
+  output.className =
+    "term-line white";
+
+  // HELP
+  if(cmd === "help"){
+
+    output.innerHTML = `
+Commands Available:<br><br>
+
+about → About Me<br>
+skills → Tech Stack<br>
+projects → Portfolio Projects<br>
+contact → Contact Information<br>
+resume → Open Resume<br>
+linkedin → Open LinkedIn<br>
+github → Open GitHub<br>
+clear → Clear Terminal
+    `;
+
+  }
+
+  // ABOUT
+  else if(cmd === "about"){
+
+    openWin("aboutWin");
+
+    output.textContent =
+      "Opening About Window...";
+  }
+
+  // SKILLS
+  else if(
+    cmd === "skills" ||
+    cmd === "tech stack"
+  ){
+
+    openWin("skillsWin");
+
+    output.textContent =
+      "Opening Skills Window...";
+  }
+
+  // PROJECTS
+  else if(cmd === "projects"){
+
+    openWin("projectsWin");
+
+    output.textContent =
+      "Opening Projects Window...";
+  }
+
+  // CONTACT
+  else if(cmd === "contact"){
+
+    openWin("contactWin");
+
+    output.textContent =
+      "Opening Contact Window...";
+  }
+
+  // RESUME
+  else if(cmd === "resume"){
+
+    resumeDownload();
+
+    output.textContent =
+      "Opening Resume...";
+  }
+
+  // LINKEDIN
+  else if(cmd === "linkedin"){
+
+    window.open(
+      "https://linkedin.com/in/shreenidhi-m03",
+      "_blank"
+    );
+
+    output.textContent =
+      "Opening LinkedIn...";
+  }
+
+  // GITHUB
+  else if(cmd === "github"){
+
+    window.open(
+      "https://github.com/SHREENIDHIMS",
+      "_blank"
+    );
+
+    output.textContent =
+      "Opening GitHub...";
+  }
+
+  // CLEAR
+  else if(cmd === "clear"){
+
+    termOutput.innerHTML = "";
+
+    createTerminalInput();
+
+    return;
+  }
+
+  // EMPTY
+  else if(cmd === ""){
+
+    output.textContent = "";
+  }
+
+  // UNKNOWN
+  else{
+
+    output.textContent =
+      `Command not found: ${cmd}`;
+  }
+
+  termOutput.appendChild(output);
+
+  createTerminalInput();
+}
+
+function showClippy(){
+
+  const clippy =
+    document.getElementById(
+      "clippy"
+    );
+
+  if(clippy){
+
+    clippy.style.display =
+      "block";
+
+    clippy.animate([
+      {
+        transform:'translateY(20px)',
+        opacity:0
+      },
+      {
+        transform:'translateY(0)',
+        opacity:1
+      }
+    ],{
+      duration:400,
+      easing:'ease-out',
+      fill:'forwards'
+    });
+  }
+}
+
+</script>
+
+<!-- Clippy Assistant -->
+<div id="clippy">
+
+  <div class="clippy-header">
+
+    <div class="clippy-title">
+      📎 Clippy
+    </div>
+
+    <button
+      class="clippy-close"
+      onclick="closeClippy()"
+    >
+      ✕
+    </button>
+
+  </div>
+
+  <div class="clippy-body">
+
+    <img
+      src="https://media.tenor.com/9z1B7d2L4TsAAAAi/clippy.gif"
+      alt="clippy"
+    />
+
+    <div class="clippy-text">
+
+      <p id="clippyMessage">
+        It looks like you're hiring a developer 👀
+      </p>
+
+      <div class="clippy-actions">
+
+        <button onclick="nextTip()">
+          Next Tip
+        </button>
+
+        <button onclick="closeClippy()">
+          Go Away
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
