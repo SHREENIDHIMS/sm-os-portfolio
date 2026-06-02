@@ -2806,7 +2806,7 @@ function enterPortfolio(){
       buildMobileGrid('portfolio');
     } else {
       document.getElementById('desktop').classList.add('visible');
-      renderWallpaper(4);
+      renderWallpaper(1);
       buildDesktopIcons();
       setTimeout(()=>{
         openWin('termWin');
@@ -2827,7 +2827,7 @@ function enterPortfolioAndSnake(){
       setTimeout(()=>openMobilePanel('snakeWin'),300);
     } else {
       document.getElementById('desktop').classList.add('visible');
-      renderWallpaper(4);
+      renderWallpaper(1);
       buildDesktopIcons();
       setTimeout(()=>{ openWin('snakeWin');},300);
     }
