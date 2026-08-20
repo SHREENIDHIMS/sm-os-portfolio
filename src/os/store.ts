@@ -35,6 +35,8 @@ export interface PersistedSettings {
   wallpaper: number
   muted: boolean
   scanlines: boolean
+  wpSpeed: number
+  wpDim: number
 }
 
 interface OSState extends PersistedSettings {
@@ -53,6 +55,8 @@ interface OSState extends PersistedSettings {
   webUrl: string
   webUrls: Record<string, string>
   iconPos: Record<string, IconPos>
+  wpSpeed: number
+  wpDim: number
 
   setPhase: (p: Phase) => void
   shutdownOS: () => void
@@ -60,6 +64,8 @@ interface OSState extends PersistedSettings {
   openWebUrl: (url: string) => void
   navigateWeb: (id: string, url: string) => void
   setIconPos: (id: string, x: number, y: number) => void
+  setWpSpeed: (v: number) => void
+  setWpDim: (v: number) => void
   closeWin: (id: string) => void
   minimizeWin: (id: string) => void
   toggleMaximize: (id: string) => void
@@ -105,7 +111,7 @@ export const useOS = create<OSState>()(
       windows: {},
       zTop: 20,
       theme: 'blue',
-      wallpaper: 4,
+      wallpaper: 12,
       muted: false,
       scanlines: true,
       startOpen: false,
@@ -120,6 +126,8 @@ export const useOS = create<OSState>()(
       webUrl: '',
       webUrls: {},
       iconPos: {},
+      wpSpeed: 1,
+      wpDim: 0,
 
       setPhase: (p) => set({ phase: p }),
       shutdownOS: () => {
@@ -189,6 +197,8 @@ export const useOS = create<OSState>()(
 
       setIconPos: (id, x, y) =>
         set((s) => ({ iconPos: { ...s.iconPos, [id]: { x, y } } })),
+      setWpSpeed: (v) => set({ wpSpeed: v }),
+      setWpDim: (v) => set({ wpDim: v }),
 
       closeWin: (id) =>
         set((s) => ({
@@ -301,7 +311,7 @@ export const useOS = create<OSState>()(
     }),
     {
       name: 'sm-os-settings',
-      partialize: (s) => ({ theme: s.theme, wallpaper: s.wallpaper, muted: s.muted, scanlines: s.scanlines, iconPos: s.iconPos }),
+      partialize: (s) => ({ theme: s.theme, wallpaper: s.wallpaper, muted: s.muted, scanlines: s.scanlines, iconPos: s.iconPos, wpSpeed: s.wpSpeed, wpDim: s.wpDim }),
       storage: createJSONStorage(() => ({
         getItem: (n) => (typeof window !== 'undefined' ? window.localStorage.getItem(n) : null),
         setItem: (n, v) => {

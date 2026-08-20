@@ -4,13 +4,20 @@ import { wps } from '../os/wallpapers'
 
 export function Wallpaper() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const frame = useRef(0)
   const idx = useOS((s) => s.wallpaper)
+  const speed = useOS((s) => s.wpSpeed)
+  const dim = useOS((s) => s.wpDim)
+  const speedRef = useRef(speed)
+
+  useEffect(() => {
+    speedRef.current = speed
+  }, [speed])
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     let raf = 0
-    let frame = 0
 
     const resize = () => {
       const parent = canvas.parentElement
@@ -24,7 +31,8 @@ export function Wallpaper() {
     const loop = () => {
       const ctx = canvas.getContext('2d')
       if (ctx && canvas.width > 0) {
-        wps[idx].fn(canvas, ctx, frame++)
+        frame.current += speedRef.current
+        wps[idx].fn(canvas, ctx, Math.floor(frame.current))
       }
       raf = requestAnimationFrame(loop)
     }
@@ -36,5 +44,10 @@ export function Wallpaper() {
     }
   }, [idx])
 
-  return <canvas ref={canvasRef} id="wpCanvas" />
+  return (
+    <>
+      <canvas ref={canvasRef} id="wpCanvas" />
+      <div style={{ position: 'absolute', inset: 0, background: '#000', opacity: dim / 100, pointerEvents: 'none' }} />
+    </>
+  )
 }

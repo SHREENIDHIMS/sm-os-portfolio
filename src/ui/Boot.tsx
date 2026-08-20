@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useOS } from '../os/store'
 import { openApp } from '../os/registry'
 import { clickSnd } from '../os/sound'
+import { Wallpaper } from './Wallpaper'
 
 export interface BootLine {
   t: string
@@ -50,8 +51,10 @@ export function Boot() {
   const done = Math.round((progress / 100) * bootSeq.length)
 
   return (
-    <div id="bootScreen">
-      <div className="boot-wrap">
+    <div id="bootScreen" style={{ background: 'transparent' }}>
+      <Wallpaper />
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,8,0.62)' }} />
+      <div className="boot-wrap" style={{ position: 'relative' }}>
         <div id="bootLines">
           {shutdown ? (
             <>
@@ -92,7 +95,8 @@ export function Welcome() {
     setTimeout(() => openApp('snakeWin'), 200)
   }
   return (
-    <div id="welcomeScreen" className="visible">
+    <div id="welcomeScreen" className="visible" style={{ background: 'transparent' }}>
+      <Wallpaper />
       <div className="welcome-card">
         <div className="welcome-logo">SHREENIDHI</div>
         <div className="welcome-sub">SM-OS v2.0</div>

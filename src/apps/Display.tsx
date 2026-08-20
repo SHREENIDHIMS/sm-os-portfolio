@@ -25,7 +25,7 @@ function WpThumb({ idx }: { idx: number }) {
     ctx.fillStyle = '#000010'
     ctx.fillRect(0, 0, 120, 50)
     try {
-      wps[idx].fn(cv, ctx, 0)
+      for (let k = 0; k < 40; k++) wps[idx].fn(cv, ctx, k * 2)
     } catch {
       /* thumb draw failed */
     }
@@ -38,10 +38,14 @@ export default function Display() {
   const wallpaper = useOS((s) => s.wallpaper)
   const scanlines = useOS((s) => s.scanlines)
   const muted = useOS((s) => s.muted)
+  const wpSpeed = useOS((s) => s.wpSpeed)
+  const wpDim = useOS((s) => s.wpDim)
   const setTheme = useOS((s) => s.setTheme)
   const setWallpaper = useOS((s) => s.setWallpaper)
   const toggleScanlines = useOS((s) => s.toggleScanlines)
   const toggleMuted = useOS((s) => s.toggleMuted)
+  const setWpSpeed = useOS((s) => s.setWpSpeed)
+  const setWpDim = useOS((s) => s.setWpDim)
   const notify = useOS((s) => s.notify)
 
   const res = `${window.innerWidth}×${window.innerHeight}`
@@ -88,6 +92,23 @@ export default function Display() {
           </div>
         </div>
         <div className="disp-section">
+          <span className="disp-label">Picture Controls</span>
+          <div className="disp-toggle">
+            <span className="disp-toggle-label">Animation Speed</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input type="range" min={25} max={200} step={25} value={Math.round(wpSpeed * 100)} onChange={(e) => setWpSpeed(Number(e.target.value) / 100)} style={{ width: 110 }} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00ff00', width: 34 }}>{wpSpeed.toFixed(2)}x</span>
+            </div>
+          </div>
+          <div className="disp-toggle">
+            <span className="disp-toggle-label">Screen Dim</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input type="range" min={0} max={70} step={5} value={wpDim} onChange={(e) => setWpDim(Number(e.target.value))} style={{ width: 110 }} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00ff00', width: 34 }}>{wpDim}%</span>
+            </div>
+          </div>
+        </div>
+        <div className="disp-section">
           <span className="disp-label">Visual Effects</span>
           <div className="disp-toggle">
             <span className="disp-toggle-label">CRT Scanlines</span>
@@ -115,7 +136,7 @@ export default function Display() {
       </WinBody>
       <WinStatusbar>
         <StatusPanel>THEME PERSISTS</StatusPanel>
-        <StatusPanel>5 themes · 6 wallpapers</StatusPanel>
+        <StatusPanel>5 themes · {wps.length} wallpapers</StatusPanel>
       </WinStatusbar>
     </>
   )

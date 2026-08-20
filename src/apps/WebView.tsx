@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { WinBody, WinMenubar, MenuItem, WinStatusbar, StatusPanel } from '../ui/Window'
 import { useOS } from '../os/store'
 import { toEmbed } from '../os/webview'
@@ -49,11 +49,11 @@ export default function WebView({ winId }: { winId?: string }) {
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') nav() }}
           />
-          <button className="browser-go" onClick={nav}>Go ▶</button>
-          <button className="browser-go" onClick={openTab}>Open in Tab ▶</button>
+          <button className="browser-go" onClick={nav}>Go â–¶</button>
+          <button className="browser-go" onClick={openTab}>Open in Tab â–¶</button>
         </div>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa', textAlign: 'center', padding: '3px 0', background: '#000060' }}>
-          Type a word to search or a URL — some sites refuse frames; if blank, hit "Open in Tab".
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa', textAlign: 'center', padding: '3px 0', background: 'var(--panel)' }}>
+          Type a word to search or a URL â€” some sites refuse frames; if blank, hit "Open in Tab".
         </div>
         {url ? (
           <iframe
@@ -63,7 +63,7 @@ export default function WebView({ winId }: { winId?: string }) {
             style={{ flex: 1, width: '100%', border: 'none', background: '#fff' }}
           />
         ) : (
-          <div style={{ flex: 1, background: '#000060', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-vt)', fontSize: 18, color: '#00ff00' }}>NO PAGE LOADED</div>
+          <div style={{ flex: 1, background: 'var(--panel)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-vt)', fontSize: 18, color: '#00ff00' }}>NO PAGE LOADED</div>
         )}
       </WinBody>
       <WinStatusbar>
