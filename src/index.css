@@ -320,3 +320,19 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   .status-bar-top{display:none;}
   #desktopIcons{grid-template-columns:repeat(2,64px);}
 }
+
+/* ===== ARCADE HIGH SCORES ===== */
+.arcade-table{font-family:var(--font-vt);font-size:15px;color:#c8c8ff;width:100%;max-width:280px;margin:0 auto;border:1px solid #333388;background:rgba(0,0,40,0.55);padding:8px 10px;box-sizing:border-box;}
+.arcade-title{font-family:var(--font-vt);font-size:18px;color:#00ff00;text-align:center;letter-spacing:2px;margin-bottom:6px;text-shadow:0 0 8px rgba(0,255,0,.4);}
+.arcade-row{display:flex;justify-content:space-between;gap:8px;padding:2px 4px;color:#c8c8ff;border-bottom:1px dashed #222255;}
+.arcade-row:last-child{border-bottom:none;}
+.arcade-rank{color:#6688aa;min-width:22px;}
+.arcade-name{flex:1;text-align:left;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.arcade-score{color:#ffcc00;}
+.arcade-empty{text-align:center;color:#6688aa;font-size:14px;line-height:1.6;padding:8px 0;}
+.arcade-modal{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;font-family:var(--font-vt);}
+.arcade-modal-box{background:#000040;border:3px outset #c0c0c0;padding:24px 32px;text-align:center;box-shadow:8px 8px 0 rgba(0,0,0,.5);}
+.arcade-input{font-family:var(--font-vt);font-size:22px;letter-spacing:3px;text-transform:uppercase;text-align:center;background:#000020;color:#00ff00;border:2px solid #00ff00;padding:6px 10px;margin-top:10px;width:220px;outline:none;caret-color:#ffcc00;}
+.arcade-input::placeholder{color:#335533;}
+.hof-grid{display:grid;grid-template-columns:1fr;gap:14px;align-items:start;}
+@media(min-width:520px){.hof-grid{grid-template-columns:repeat(3,1fr);}}

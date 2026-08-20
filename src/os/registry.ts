@@ -16,6 +16,7 @@ import Clock from '../apps/Clock'
 import Snake from '../apps/Snake'
 import Memory from '../apps/Memory'
 import Minesweeper from '../apps/Minesweeper'
+import HallOfFame from '../apps/HallOfFame'
 import Recycle from '../apps/Recycle'
 import Browser from '../apps/Browser'
 import ResumeViewer from '../apps/ResumeViewer'
@@ -50,6 +51,7 @@ export const APPS: AppMeta[] = [
   { id: 'snakeWin', icon: '🐍', label: 'SNAKE', title: 'SNAKE.EXE — Classic Arcade', w: 440, h: 520, component: Snake, desktop: true, menu: true },
   { id: 'memoryWin', icon: '🃏', label: 'MEMORY', title: 'MEMORY.EXE — Match Pairs', w: 350, h: 460, component: Memory, desktop: true, menu: true },
   { id: 'mineWin', icon: '💣', label: 'MINES', title: 'MINESWEEPER.EXE', w: 360, h: 440, component: Minesweeper, desktop: true, menu: true },
+  { id: 'hallWin', icon: '🏆', label: 'HALL OF FAME', title: 'HALL_OF_FAME.EXE — Top Players', w: 560, h: 460, component: HallOfFame, desktop: true, menu: true },
   { id: 'recycleWin', icon: '🗑', label: 'RECYCLE', title: 'RECYCLE BIN', w: 380, h: 360, component: Recycle, desktop: true, menu: false },
   { id: 'resumeWin', icon: '📄', label: 'RESUME', title: 'RESUME_VIEWER.EXE — Shreenidhi_M_Resume.pdf', w: 640, h: 560, component: ResumeViewer, desktop: true, menu: false },
 ]

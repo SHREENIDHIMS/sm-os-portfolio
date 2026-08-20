@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { WinBody, WinStatusbar, StatusPanel } from '../ui/Window'
 import { clickSnd, beep } from '../os/sound'
 import { useOS } from '../os/store'
+import { qualifies, formatScore } from '../os/leaderboard'
+import { ScoreTable, NameEntry } from '../ui/ArcadeScores'
 
 const COLS = 9
 const ROWS = 9
@@ -49,10 +51,22 @@ export default function Minesweeper() {
   const [lost, setLost] = useState(false)
   const [won, setWon] = useState(false)
   const [flags, setFlags] = useState(0)
+  const [started, setStarted] = useState(false)
+  const [time, setTime] = useState(0)
+  const [winTime, setWinTime] = useState(0)
+  const [qualified, setQualified] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    if (!started || won || lost) return
+    const t = window.setInterval(() => setTime((s) => s + 1), 1000)
+    return () => window.clearInterval(t)
+  }, [started, won, lost])
 
   const reveal = (r: number, c: number) => {
     if (lost || won) return
     clickSnd()
+    if (!started) setStarted(true)
     let next = grid.map((row) => row.map((cell) => ({ ...cell })))
     if (next[r][c].flag || next[r][c].open) return
     if (next[r][c].mine) {
@@ -82,8 +96,10 @@ export default function Minesweeper() {
     const opened = next.flat().filter((cell) => cell.open).length
     if (opened === COLS * ROWS - MINES) {
       setWon(true)
+      setWinTime(time)
+      setQualified(qualifies('minesweeper', time))
       beep(880, 0.12, 'sine', 0.12)
-      useOS.getState().notify('MINESWEEPER.EXE', '🏆 You cleared the minefield!')
+      useOS.getState().notify('MINESWEEPER.EXE', '🏆 You cleared the minefield in ' + formatScore('minesweeper', time) + '!')
     }
   }
 
@@ -103,11 +119,21 @@ export default function Minesweeper() {
     setLost(false)
     setWon(false)
     setFlags(0)
+    setStarted(false)
+    setTime(0)
+    setWinTime(0)
+    setQualified(false)
+    setSaved(false)
   }
 
   return (
     <>
       <WinBody>
+        {!started && (
+          <div style={{ marginBottom: 8 }}>
+            <ScoreTable game="minesweeper" limit={3} title="BEST TIMES" />
+          </div>
+        )}
         <div style={{ textAlign: 'center', marginBottom: 8 }}>
           <span style={{ fontFamily: 'var(--font-vt)', fontSize: 22, color: '#00ff00' }}>MINESWEEPER.EXE</span>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa' }}>
@@ -117,6 +143,7 @@ export default function Minesweeper() {
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-vt)', fontSize: 18, color: '#ffcc00' }}>
           <span>MINES: <span style={{ color: '#fff' }}>{MINES - flags}</span></span>
+          <span>TIME: <span style={{ color: '#fff' }}>{time}s</span></span>
           <span>FLAGS: <span style={{ color: '#fff' }}>{flags}</span></span>
         </div>
         <div className="mine-grid" style={{ gridTemplateColumns: `repeat(${COLS},32px)` }}>
@@ -136,6 +163,22 @@ export default function Minesweeper() {
             )),
           )}
         </div>
+        {won && (
+          <div style={{ textAlign: 'center', marginTop: 12 }}>
+            <div style={{ fontFamily: 'var(--font-vt)', fontSize: 20, color: '#00ff00' }}>🏆 CLEARED!</div>
+            <div style={{ fontFamily: 'var(--font-vt)', fontSize: 18, color: '#ffcc00', margin: '4px 0 8px' }}>TIME: {formatScore('minesweeper', winTime)}</div>
+            <ScoreTable game="minesweeper" limit={5} title="BEST TIMES" />
+            <button className="retro-btn" style={{ fontSize: 15, padding: '2px 12px' }} onClick={reset}>[ PLAY AGAIN ]</button>
+          </div>
+        )}
+        {won && qualified && !saved && (
+          <NameEntry
+            game="minesweeper"
+            score={winTime}
+            onDone={() => setSaved(true)}
+            onSkip={() => setQualified(false)}
+          />
+        )}
       </WinBody>
       <WinStatusbar>
         <StatusPanel>{won ? 'WINNER' : lost ? 'GAME OVER' : 'SAFE'}</StatusPanel>

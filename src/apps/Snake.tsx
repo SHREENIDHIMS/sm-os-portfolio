@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { WinBody, WinStatusbar, StatusPanel } from '../ui/Window'
 import { clickSnd, beep } from '../os/sound'
+import { qualifies } from '../os/leaderboard'
+import { ScoreTable, NameEntry } from '../ui/ArcadeScores'
 
 const SZ = 20
 const SPD = 155
@@ -20,6 +22,8 @@ interface Game {
   running: boolean
   over: boolean
   started: boolean
+  pending: boolean
+  saved: boolean
 }
 
 const fresh = (): Game => ({
@@ -32,6 +36,8 @@ const fresh = (): Game => ({
   running: false,
   over: false,
   started: false,
+  pending: false,
+  saved: false,
 })
 
 export default function Snake() {
@@ -105,6 +111,7 @@ export default function Snake() {
       game.running = false
       if (timer.current) clearInterval(timer.current)
       if (game.score > game.hi) game.hi = game.score
+      game.pending = qualifies('snake', game.score)
       beep(200, 0.3, 'sawtooth', 0.1)
       render()
       return
@@ -155,6 +162,9 @@ export default function Snake() {
             <div style={{ fontFamily: 'var(--font-vt)', fontSize: 'clamp(40px,10vw,80px)', color: '#10860c', letterSpacing: 2, lineHeight: 0.9 }}>SNAKE v2.0</div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#6688aa', margin: '10px 0' }}>Arrow keys / WASD / D-Pad / Swipe</div>
             <button className="retro-btn" onClick={start}>[ START GAME ]</button>
+            <div style={{ marginTop: 12 }}>
+              <ScoreTable game="snake" limit={3} title="TOP PLAYERS" />
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: '100%', paddingTop: 0 }}>
@@ -185,9 +195,32 @@ export default function Snake() {
               ))}
               <div className="snake-cell snake-food" style={{ left: game.food.x * cellPx, top: game.food.y * cellPx, width: cellPx, height: cellPx }} />
               <div className={'snake-overlay' + (game.over ? ' vis' : '')}>
-                <div>GAME OVER</div>
-                <div style={{ color: '#ffcc00', fontSize: 18, marginTop: 5 }}>Score: {game.score}</div>
-                <button className="retro-btn" onClick={start}>[ RETRY ]</button>
+                {game.pending ? (
+                  <NameEntry
+                    game="snake"
+                    score={game.score}
+                    onDone={() => {
+                      g.current.pending = false
+                      g.current.saved = true
+                      render()
+                    }}
+                    onSkip={() => {
+                      g.current.pending = false
+                      render()
+                    }}
+                  />
+                ) : (
+                  <>
+                    <div>GAME OVER</div>
+                    <div style={{ color: '#ffcc00', fontSize: 18, marginTop: 5 }}>Score: {game.score}</div>
+                    {game.saved && (
+                      <div style={{ marginTop: 8 }}>
+                        <ScoreTable game="snake" limit={3} title="TOP PLAYERS" />
+                      </div>
+                    )}
+                    <button className="retro-btn" onClick={start}>[ RETRY ]</button>
+                  </>
+                )}
               </div>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa' }}>Walls wrap · Avoid your tail</div>
