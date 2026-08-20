@@ -1,0 +1,122 @@
+import { useEffect, useRef } from 'react'
+import { WinBody, WinStatusbar, StatusPanel } from '../ui/Window'
+import { useOS } from '../os/store'
+import { wps } from '../os/wallpapers'
+import { clickSnd, openSnd } from '../os/sound'
+import type { ThemeName } from '../os/store'
+
+const themeDefs: { id: ThemeName; label: string; bg: string; fg: string }[] = [
+  { id: 'blue', label: 'Blue', bg: 'linear-gradient(180deg,#0000b0,#000060)', fg: '#00ff00' },
+  { id: 'amber', label: 'Amber', bg: 'linear-gradient(180deg,#402000,#201000)', fg: '#ffcc00' },
+  { id: 'red', label: 'Red', bg: 'linear-gradient(180deg,#400010,#200008)', fg: '#ff4444' },
+  { id: 'green', label: 'Green', bg: 'linear-gradient(180deg,#003020,#001510)', fg: '#00ff88' },
+  { id: 'purple', label: 'Purple', bg: 'linear-gradient(180deg,#200040,#100020)', fg: '#cc88ff' },
+]
+
+function WpThumb({ idx }: { idx: number }) {
+  const ref = useRef<HTMLCanvasElement>(null)
+  useEffect(() => {
+    const cv = ref.current
+    if (!cv) return
+    cv.width = 120
+    cv.height = 50
+    const ctx = cv.getContext('2d')
+    if (!ctx) return
+    ctx.fillStyle = '#000010'
+    ctx.fillRect(0, 0, 120, 50)
+    try {
+      wps[idx].fn(cv, ctx, 0)
+    } catch {
+      /* thumb draw failed */
+    }
+  }, [idx])
+  return <canvas ref={ref} />
+}
+
+export default function Display() {
+  const theme = useOS((s) => s.theme)
+  const wallpaper = useOS((s) => s.wallpaper)
+  const scanlines = useOS((s) => s.scanlines)
+  const muted = useOS((s) => s.muted)
+  const setTheme = useOS((s) => s.setTheme)
+  const setWallpaper = useOS((s) => s.setWallpaper)
+  const toggleScanlines = useOS((s) => s.toggleScanlines)
+  const toggleMuted = useOS((s) => s.toggleMuted)
+  const notify = useOS((s) => s.notify)
+
+  const res = `${window.innerWidth}×${window.innerHeight}`
+
+  return (
+    <>
+      <WinBody>
+        <div className="disp-section">
+          <span className="disp-label">OS Theme Color</span>
+          <div className="theme-row">
+            {themeDefs.map((t) => (
+              <div
+                key={t.id}
+                className={'theme-sw' + (theme === t.id ? ' on' : '')}
+                style={{ background: t.bg }}
+                onClick={() => {
+                  clickSnd()
+                  setTheme(t.id)
+                  notify('DISPLAY.CPL', 'Theme: ' + t.label.toUpperCase())
+                }}
+              >
+                <span style={{ color: t.fg }}>{t.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="disp-section">
+          <span className="disp-label">Animated Wallpaper</span>
+          <div className="wp-grid">
+            {wps.map((wp, i) => (
+              <div
+                key={wp.name}
+                className={'wp-thumb' + (wallpaper === i ? ' on' : '')}
+                onClick={() => {
+                  clickSnd()
+                  setWallpaper(i)
+                  notify('DISPLAY.CPL', 'Wallpaper: ' + wp.name)
+                }}
+              >
+                <WpThumb idx={i} />
+                <span className="wp-thumb-label">{wp.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="disp-section">
+          <span className="disp-label">Visual Effects</span>
+          <div className="disp-toggle">
+            <span className="disp-toggle-label">CRT Scanlines</span>
+            <button className={'toggle-btn' + (scanlines ? ' on' : '')} onClick={() => { clickSnd(); toggleScanlines() }}>{scanlines ? 'ON' : 'OFF'}</button>
+          </div>
+          <div className="disp-toggle">
+            <span className="disp-toggle-label">Sound Effects</span>
+            <button className={'toggle-btn' + (!muted ? ' on' : '')} onClick={() => { openSnd(); toggleMuted() }}>{muted ? 'OFF' : 'ON'}</button>
+          </div>
+        </div>
+        <div className="disp-section">
+          <span className="disp-label">View Mode</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#c8c8ff' }}>
+              Current: <span style={{ color: '#00ffff' }}>Desktop UI · Responsive</span>
+            </span>
+          </div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#6688aa', marginTop: 6 }}>
+            Auto-maximizes windows on small screens
+          </div>
+        </div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa', borderTop: '1px solid #222266', paddingTop: 6 }}>
+          Resolution: <span style={{ color: '#00ff00' }}>{res}</span> &nbsp;|&nbsp; Color: 32-bit &nbsp;|&nbsp; 60Hz
+        </div>
+      </WinBody>
+      <WinStatusbar>
+        <StatusPanel>THEME PERSISTS</StatusPanel>
+        <StatusPanel>5 themes · 6 wallpapers</StatusPanel>
+      </WinStatusbar>
+    </>
+  )
+}
