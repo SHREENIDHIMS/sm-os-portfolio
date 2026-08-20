@@ -201,7 +201,7 @@ export default function Minesweeper() {
             </button>
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-vt)', fontSize: 16, color: '#ffcc00' }}>
+        <div className="arcade-hud">
           <span>MINES: <span style={{ color: '#fff' }}>{d.mines - flags}</span></span>
           <span>TIME: <span style={{ color: '#fff' }}>{time}s</span></span>
           <span>FLAGS: <span style={{ color: '#fff' }}>{flags}</span></span>

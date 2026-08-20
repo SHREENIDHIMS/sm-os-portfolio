@@ -152,6 +152,8 @@ export default function Snake() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
       const k = e.key.toLowerCase()
       const map: Record<string, string> = { arrowup: 'UP', arrowdown: 'DOWN', arrowleft: 'LEFT', arrowright: 'RIGHT', w: 'UP', s: 'DOWN', a: 'LEFT', d: 'RIGHT' }
       if (map[k]) {
@@ -173,7 +175,7 @@ export default function Snake() {
       <WinBody style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
         {!game.started ? (
           <div style={{ textAlign: 'center', padding: 20 }}>
-            <div style={{ fontFamily: 'var(--font-vt)', fontSize: 'clamp(40px,10vw,80px)', color: '#10860c', letterSpacing: 2, lineHeight: 0.9 }}>SNAKE v2.0</div>
+            <div style={{ fontFamily: 'var(--font-vt)', fontSize: 'clamp(40px,10vw,80px)', color: '#39ff14', letterSpacing: 2, lineHeight: 0.9, textShadow: '0 0 14px rgba(57,255,20,0.5)' }}>SNAKE v2.0</div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#6688aa', margin: '10px 0' }}>Arrow keys / WASD / D-Pad / Swipe</div>
             <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
               {(['easy', 'normal', 'hard'] as const).map((d) => (

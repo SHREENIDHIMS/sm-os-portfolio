@@ -51,7 +51,7 @@ export default function TaskManager() {
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, margin: '8px 0 4px' }}>
           PROCESSES ({openIds.length + 3})
         </div>
-        <div style={{ border: '1px solid #8090b0', background: '#fff', maxHeight: 150, overflowY: 'auto' }}>
+        <div className="tm-table">
           <div className="tm-row tm-head">
             <span>Process</span>
             <span>Status</span>

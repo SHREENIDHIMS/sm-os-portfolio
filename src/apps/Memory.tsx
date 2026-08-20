@@ -144,7 +144,7 @@ export default function Memory() {
             </button>
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-vt)', fontSize: 16, color: '#ffcc00' }}>
+        <div className="arcade-hud">
           <span>TIME: <span style={{ color: '#fff' }}>{time}s</span></span>
           <span>MOVES: <span style={{ color: '#fff' }}>{moves}</span></span>
           <span>LEFT: <span style={{ color: '#fff' }}>{d.pairs - matched}</span></span>
