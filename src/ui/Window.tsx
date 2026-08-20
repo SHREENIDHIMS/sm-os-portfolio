@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import { Suspense, type CSSProperties, type ReactNode } from 'react'
 import { useOS } from '../os/store'
 import type { AppMeta } from '../os/registry'
 import { clickSnd, closeSnd, openSnd } from '../os/sound'
@@ -74,7 +74,15 @@ export function Window({ meta }: Props) {
           <button className="win-btn cls" onClick={close}>✕</button>
         </div>
       </div>
-      <App />
+      <Suspense
+        fallback={
+          <div className="win-body" style={{ display: 'grid', placeItems: 'center', fontFamily: 'var(--font-vt)', color: '#00ff00', fontSize: 18 }}>
+            LOADING MODULE...
+          </div>
+        }
+      >
+        <App />
+      </Suspense>
     </div>
   )
 }

@@ -4,8 +4,12 @@ import type { GameId } from '../os/leaderboard'
 
 const GAMES: { id: GameId; title: string; icon: string; subtitle: string }[] = [
   { id: 'snake', title: 'SNAKE.EXE', icon: '🐍', subtitle: 'Highest points' },
-  { id: 'memory', title: 'MEMORY.EXE', icon: '🃏', subtitle: 'Fewest moves' },
-  { id: 'minesweeper', title: 'MINESWEEPER.EXE', icon: '💣', subtitle: 'Fastest clear' },
+  { id: 'memory-easy', title: 'MEMORY.EXE', icon: '🃏', subtitle: 'Easy · 6 pairs · fastest' },
+  { id: 'memory-normal', title: 'MEMORY.EXE', icon: '🃏', subtitle: 'Normal · 8 pairs · fastest' },
+  { id: 'memory-hard', title: 'MEMORY.EXE', icon: '🃏', subtitle: 'Hard · 10 pairs · fastest' },
+  { id: 'minesweeper-easy', title: 'MINESWEEPER', icon: '💣', subtitle: 'Easy · 9x9 · fastest clear' },
+  { id: 'minesweeper-medium', title: 'MINESWEEPER', icon: '💣', subtitle: 'Medium · 16x16 · fastest' },
+  { id: 'minesweeper-hard', title: 'MINESWEEPER', icon: '💣', subtitle: 'Hard · 16x30 · fastest' },
 ]
 
 export default function HallOfFame() {
@@ -14,7 +18,7 @@ export default function HallOfFame() {
       <WinBody>
         <div style={{ textAlign: 'center', marginBottom: 12 }}>
           <span style={{ fontFamily: 'var(--font-vt)', fontSize: 24, color: '#00ff00' }}>🏆 HALL OF FAME</span>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa' }}>Top players across SM-OS games</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa' }}>Top players across every SM-OS game and difficulty</div>
         </div>
         <div className="hof-grid">
           {GAMES.map((g) => (
@@ -28,7 +32,7 @@ export default function HallOfFame() {
       </WinBody>
       <WinStatusbar>
         <StatusPanel>LOCAL SCORES</StatusPanel>
-        <StatusPanel>saved per browser</StatusPanel>
+        <StatusPanel>per game & difficulty</StatusPanel>
       </WinStatusbar>
     </>
   )

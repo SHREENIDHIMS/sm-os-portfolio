@@ -1,4 +1,11 @@
-export type GameId = 'snake' | 'memory' | 'minesweeper'
+export type GameId =
+  | 'snake'
+  | 'memory-easy'
+  | 'memory-normal'
+  | 'memory-hard'
+  | 'minesweeper-easy'
+  | 'minesweeper-medium'
+  | 'minesweeper-hard'
 
 export interface ScoreEntry {
   name: string
@@ -8,7 +15,17 @@ export interface ScoreEntry {
 
 const MAX = 5
 const KEY = (g: GameId) => 'sm-os-scores-' + g
-const order: Record<GameId, 'desc' | 'asc'> = { snake: 'desc', memory: 'asc', minesweeper: 'asc' }
+const NAME_KEY = 'sm-os-player-name'
+const order: Record<GameId, 'desc' | 'asc'> = {
+  snake: 'desc',
+  'memory-easy': 'asc',
+  'memory-normal': 'asc',
+  'memory-hard': 'asc',
+  'minesweeper-easy': 'asc',
+  'minesweeper-medium': 'asc',
+  'minesweeper-hard': 'asc',
+}
+const isTime = (g: GameId) => g.startsWith('minesweeper') || g.startsWith('memory')
 
 function sort(list: ScoreEntry[], g: GameId): ScoreEntry[] {
   return [...list].sort((a, b) => (order[g] === 'desc' ? b.score - a.score : a.score - b.score))
@@ -52,10 +69,26 @@ export function submitScore(g: GameId, name: string, score: number): ScoreEntry[
 }
 
 export function formatScore(g: GameId, score: number): string {
-  if (g === 'minesweeper') {
+  if (isTime(g)) {
     const m = Math.floor(score / 60)
     const s = score % 60
     return m > 0 ? m + ':' + s.toString().padStart(2, '0') : s + 's'
   }
   return String(score)
+}
+
+export function getPlayerName(): string {
+  try {
+    return (window.localStorage.getItem(NAME_KEY) || '').slice(0, 12)
+  } catch {
+    return ''
+  }
+}
+
+export function setPlayerName(name: string) {
+  try {
+    window.localStorage.setItem(NAME_KEY, name.trim().toUpperCase().slice(0, 12))
+  } catch {
+    /* storage unavailable */
+  }
 }

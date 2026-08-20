@@ -43,6 +43,7 @@ interface OSState extends PersistedSettings {
   clippyVisible: boolean
   notifSeq: number
   shutdown: boolean
+  screensaver: boolean
 
   setPhase: (p: Phase) => void
   shutdownOS: () => void
@@ -63,6 +64,7 @@ interface OSState extends PersistedSettings {
   notify: (title: string, msg: string) => void
   dismissNotif: (id: number) => void
   setClippy: (v: boolean) => void
+  setScreensaver: (v: boolean) => void
 }
 
 const TASKBAR_H = 40
@@ -100,6 +102,7 @@ export const useOS = create<OSState>()(
       clippyVisible: false,
       notifSeq: 0,
       shutdown: false,
+      screensaver: false,
 
       setPhase: (p) => set({ phase: p }),
       shutdownOS: () => {
@@ -258,6 +261,7 @@ export const useOS = create<OSState>()(
       },
       dismissNotif: (id) => set((s) => ({ notifs: s.notifs.filter((n) => n.id !== id) })),
       setClippy: (v) => set({ clippyVisible: v }),
+      setScreensaver: (v) => set({ screensaver: v }),
     }),
     {
       name: 'sm-os-settings',

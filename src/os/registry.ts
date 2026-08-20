@@ -1,25 +1,26 @@
-import type { ComponentType } from 'react'
+import { lazy, type ComponentType } from 'react'
 import { useOS } from './store'
-import Terminal from '../apps/Terminal'
-import About from '../apps/About'
-import Skills from '../apps/Skills'
-import Radar from '../apps/Radar'
-import Projects from '../apps/Projects'
-import Career from '../apps/Career'
-import Files from '../apps/Files'
-import AITools from '../apps/AITools'
-import Certs from '../apps/Certs'
-import Contact from '../apps/Contact'
-import Display from '../apps/Display'
-import CodePlayground from '../apps/CodePlayground'
-import Clock from '../apps/Clock'
-import Snake from '../apps/Snake'
-import Memory from '../apps/Memory'
-import Minesweeper from '../apps/Minesweeper'
-import HallOfFame from '../apps/HallOfFame'
-import Recycle from '../apps/Recycle'
-import Browser from '../apps/Browser'
-import ResumeViewer from '../apps/ResumeViewer'
+
+const Terminal = lazy(() => import('../apps/Terminal'))
+const About = lazy(() => import('../apps/About'))
+const Skills = lazy(() => import('../apps/Skills'))
+const Radar = lazy(() => import('../apps/Radar'))
+const Projects = lazy(() => import('../apps/Projects'))
+const Career = lazy(() => import('../apps/Career'))
+const Files = lazy(() => import('../apps/Files'))
+const AITools = lazy(() => import('../apps/AITools'))
+const Certs = lazy(() => import('../apps/Certs'))
+const Contact = lazy(() => import('../apps/Contact'))
+const Display = lazy(() => import('../apps/Display'))
+const CodePlayground = lazy(() => import('../apps/CodePlayground'))
+const Clock = lazy(() => import('../apps/Clock'))
+const Snake = lazy(() => import('../apps/Snake'))
+const Memory = lazy(() => import('../apps/Memory'))
+const Minesweeper = lazy(() => import('../apps/Minesweeper'))
+const HallOfFame = lazy(() => import('../apps/HallOfFame'))
+const Recycle = lazy(() => import('../apps/Recycle'))
+const Browser = lazy(() => import('../apps/Browser'))
+const ResumeViewer = lazy(() => import('../apps/ResumeViewer'))
 
 export interface AppMeta {
   id: string
@@ -48,10 +49,10 @@ export const APPS: AppMeta[] = [
   { id: 'codeWin', icon: '💻', label: 'CODE', title: 'CODE_PLAYGROUND.JS — JavaScript Runner', w: 580, h: 420, component: CodePlayground, desktop: true, menu: true },
   { id: 'clockWin', icon: '🕐', label: 'CLOCK', title: 'CLOCK.EXE', w: 330, h: 440, component: Clock, desktop: true, menu: true },
   { id: 'browserWin', icon: '🌐', label: 'BROWSER', title: 'SM-BROWSER v1.0', w: 580, h: 480, component: Browser, desktop: true, menu: true },
-  { id: 'snakeWin', icon: '🐍', label: 'SNAKE', title: 'SNAKE.EXE — Classic Arcade', w: 440, h: 520, component: Snake, desktop: true, menu: true },
-  { id: 'memoryWin', icon: '🃏', label: 'MEMORY', title: 'MEMORY.EXE — Match Pairs', w: 350, h: 460, component: Memory, desktop: true, menu: true },
-  { id: 'mineWin', icon: '💣', label: 'MINES', title: 'MINESWEEPER.EXE', w: 360, h: 440, component: Minesweeper, desktop: true, menu: true },
-  { id: 'hallWin', icon: '🏆', label: 'HALL OF FAME', title: 'HALL_OF_FAME.EXE — Top Players', w: 560, h: 460, component: HallOfFame, desktop: true, menu: true },
+  { id: 'snakeWin', icon: '🐍', label: 'SNAKE', title: 'SNAKE.EXE — Classic Arcade', w: 440, h: 540, component: Snake, desktop: true, menu: true },
+  { id: 'memoryWin', icon: '🃏', label: 'MEMORY', title: 'MEMORY.EXE — Match Pairs', w: 370, h: 500, component: Memory, desktop: true, menu: true },
+  { id: 'mineWin', icon: '💣', label: 'MINES', title: 'MINESWEEPER.EXE', w: 420, h: 500, component: Minesweeper, desktop: true, menu: true },
+  { id: 'hallWin', icon: '🏆', label: 'HALL OF FAME', title: 'HALL_OF_FAME.EXE — Top Players', w: 660, h: 620, component: HallOfFame, desktop: true, menu: true },
   { id: 'recycleWin', icon: '🗑', label: 'RECYCLE', title: 'RECYCLE BIN', w: 380, h: 360, component: Recycle, desktop: true, menu: false },
   { id: 'resumeWin', icon: '📄', label: 'RESUME', title: 'RESUME_VIEWER.EXE — Shreenidhi_M_Resume.pdf', w: 640, h: 560, component: ResumeViewer, desktop: true, menu: false },
 ]
