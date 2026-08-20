@@ -10,13 +10,13 @@ function answer(raw: string): { text: string; action?: () => void } {
   const q = raw.toLowerCase()
   if (/(hi|hello|hey|yo)\b/.test(q)) return { text: 'Hello! I am SM-ASSISTANT v1.0 🤖 — ask me about Shreenidhi: skills, projects, experience, contact…' }
   if (q.includes('skill') || q.includes('stack') || q.includes('tech')) {
-    return { text: '⚙️ Core stack: Java · Spring Boot · Hibernate · React · TypeScript · Tailwind · MySQL · MongoDB · Git. Full details in SKILLS.SYS on the desktop.' }
+    return { text: '⚙️ Core stack: Java · Spring Boot · React · Node.js · MERN & PERN · Hibernate · MongoDB · MySQL/PostgreSQL · Docker · Git. Full details in SKILLS.SYS on the desktop.' }
   }
   if (q.includes('project')) {
     return { text: '📁 Highlights: E-COMM (Spring Boot + React store), ONLYFOODS (food ordering), AGRIBOT (agri robot), ROAMAI (AI travel planner) — and FOLIO, the OS you are using right now! Open PROJECTS for the tour.' }
   }
   if (q.includes('experience') || q.includes('career') || q.includes('work')) {
-    return { text: '🏆 B.Tech CS graduate (GITAM, 2025) focused on Java full-stack + AI applications. Check CAREER.LOG for the timeline.' }
+    return { text: '🏆 Computer Science Engineer (GITAM, 2025) building AI-powered applications across MERN & PERN stacks. Check CAREER.LOG for the timeline.' }
   }
   if (q.includes('education') || q.includes('college') || q.includes('study') || q.includes('degree')) {
     return { text: '🎓 B.Tech Computer Science — GITAM University, Class of 2025.' }

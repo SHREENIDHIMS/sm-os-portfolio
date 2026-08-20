@@ -20,9 +20,19 @@ export const skillCategories: SkillCategory[] = [
     color: '#00cc44',
     skills: [
       { name: 'Spring Boot', pct: 86 },
+      { name: 'Node.js / Express', pct: 80 },
       { name: 'JPA / Hibernate', pct: 84 },
       { name: 'Jakarta EE / JSP', pct: 80 },
       { name: 'REST APIs', pct: 86 },
+    ],
+  },
+  {
+    cat: '// FRONTEND & FULL STACKS',
+    color: '#4488ff',
+    skills: [
+      { name: 'React', pct: 84 },
+      { name: 'MERN Stack', pct: 82 },
+      { name: 'PERN Stack', pct: 84 },
     ],
   },
   {
@@ -57,20 +67,20 @@ export const skillCategories: SkillCategory[] = [
 export const radarSkills = [
   { label: 'Backend Dev', pct: 86, color: '#00cc44' },
   { label: 'Database', pct: 85, color: '#00ffff' },
-  { label: 'Frontend / UI', pct: 82, color: '#4488ff' },
+  { label: 'Frontend / React', pct: 84, color: '#4488ff' },
+  { label: 'Node.js', pct: 80, color: '#88ff44' },
   { label: 'Architecture', pct: 84, color: '#44ffaa' },
   { label: 'AI / ML', pct: 76, color: '#cc88ff' },
   { label: 'DevOps / Docker', pct: 74, color: '#ffcc00' },
   { label: 'Prompt Eng / AI Tools', pct: 80, color: '#ff88cc' },
-  { label: 'Testing / Patterns', pct: 70, color: '#ff8866' },
 ]
 
 export const radarStatus = [
   { label: 'JAVA', val: 'EXPERT', on: true },
   { label: 'SPRING', val: 'PROFICIENT', on: true },
-  { label: 'DB', val: 'CONNECTED', on: true },
-  { label: 'DOCKER', val: 'STAGED', on: true },
+  { label: 'REACT', val: 'PROFICIENT', on: true },
+  { label: 'NODE', val: 'PROFICIENT', on: true },
+  { label: 'MERN/PERN', val: 'ACTIVE', on: true },
   { label: 'AI/ML', val: 'LOADED', on: true },
-  { label: 'AGILE', val: 'PRACTICED', on: true },
   { label: 'DEPLOY', val: 'READY', on: false },
 ]

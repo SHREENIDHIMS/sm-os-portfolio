@@ -1,8 +1,8 @@
 import { WinBody, WinStatusbar, StatusPanel, StatusDot, promptLine } from '../ui/Window'
 
 const tags = [
-  ['g', 'Java'], ['g', 'Spring Boot'], ['b', 'Jakarta EE'], ['b', 'JPA/Hibernate'], ['c', 'PostgreSQL'],
-  ['a', 'MySQL'], ['c', 'REST APIs'], ['', 'Docker'], ['p', 'TensorFlow'], ['', 'Git/Maven'], ['a', 'Figma'], ['', 'AI Tools'],
+  ['g', 'Java'], ['g', 'Spring Boot'], ['b', 'React'], ['g', 'Node.js'], ['b', 'Jakarta EE'], ['b', 'JPA/Hibernate'], ['c', 'PostgreSQL'],
+  ['a', 'MySQL'], ['c', 'MongoDB'], ['c', 'REST APIs'], ['', 'Docker'], ['p', 'TensorFlow'], ['', 'Git/Maven'], ['a', 'Figma'], ['', 'AI Tools'],
 ]
 
 const ascii = `:::::::::::::::::::::::::::::::-
@@ -33,12 +33,13 @@ export default function About() {
           <pre className="about-ascii">{ascii}</pre>
           <div>
             <div className="about-name">Shreenidhi M</div>
-            <div className="about-role">&gt; Java Full Stack Developer · Bengaluru, India</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#ffcc00', marginTop: 4 }}>▶ Open to Full-Time Opportunities</div>
+            <div className="about-role">&gt; Computer Science Engineer · Full-Stack Developer</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#00ffff', marginTop: 4 }}>Java • Spring Boot • React • Node.js | MERN &amp; PERN</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#ffcc00', marginTop: 4 }}>▶ Building AI-Powered Applications · Open to Full-Time Opportunities</div>
           </div>
         </div>
         <div className="about-bio">
-          Computer Science graduate from GITAM University (2025) with hands-on experience in Java, Spring Boot, PostgreSQL, REST APIs, Docker, and Full Stack Development.
+          Computer Science Engineer from GITAM University (2025) with hands-on experience across Java, Spring Boot, React, Node.js, PostgreSQL, MongoDB, REST APIs, Docker, and both MERN & PERN full-stack development.
           <br />
           <br />
           Built production-style applications across e-commerce (Spring Boot + PostgreSQL + Docker), food delivery (Jakarta EE + MySQL), AI crop detection (TensorFlow + CNN + Raspberry Pi), AI music studio (Folio Instrumenta), and AI travel planning (RoamAI).

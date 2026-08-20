@@ -101,7 +101,9 @@ export function Welcome() {
         <div className="welcome-logo">SHREENIDHI</div>
         <div className="welcome-sub">SM-OS v2.0</div>
         <div className="welcome-desc">
-          Software Engineering · Java · AI Applications · Full-Stack Apps
+          Computer Science Engineer | Full-Stack Developer
+          <br />
+          Java • Spring Boot • React • Node.js | MERN &amp; PERN | Building AI-Powered Applications
           <br />
           B.Tech CS Graduate GITAM 2025
         </div>
