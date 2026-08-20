@@ -20,7 +20,7 @@ export function StartMenu() {
     useOS.getState().openWin('resumeWin', 640, 560)
   }
 
-  const games = menuApps.filter((a) => ['snakeWin', 'memoryWin', 'mineWin'].includes(a.id))
+  const games = menuApps.filter((a) => ['snakeWin', 'memoryWin', 'mineWin', 'hallWin'].includes(a.id))
   const apps = menuApps.filter((a) => !games.includes(a))
   const meta = appById['resumeWin']
 

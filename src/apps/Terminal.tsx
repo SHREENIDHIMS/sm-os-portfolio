@@ -91,7 +91,7 @@ export default function Terminal() {
         append('green', '  WINDOWS: about, skills, radar, projects')
         append('green', '           experience, ai, certs, contact, files')
         append('green', '           code, clock, display, browser')
-        append('green', '  GAMES:   snake, memory, minesweeper')
+        append('green', '  GAMES:   snake, memory, minesweeper, halloffame')
         append('green', '  FILES:   ls, pwd, cat [about|skills]')
         append('green', '  SYSTEM:  whoami, uname, date, clear, exit')
         append('green', '           history, w, sysinfo, sudo')
@@ -222,6 +222,12 @@ export default function Terminal() {
       case 'mine':
         openWin('mineWin')
         append('cyan', '→ Launched MINESWEEPER.EXE')
+        break
+      case 'halloffame':
+      case 'hall':
+      case 'scores':
+        openWin('hallWin')
+        append('cyan', '→ Launched HALL_OF_FAME.EXE')
         break
       case 'resume':
         openWin('resumeWin')

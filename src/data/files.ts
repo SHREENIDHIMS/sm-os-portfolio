@@ -150,6 +150,7 @@ export const fileStructure: Record<string, Folder> = {
       { name: 'Snake.exe', icon: '🐍', type: 'win', target: 'snakeWin' },
       { name: 'Memory.exe', icon: '🃏', type: 'win', target: 'memoryWin' },
       { name: 'Minesweeper.exe', icon: '💣', type: 'win', target: 'mineWin' },
+      { name: 'HallOfFame.exe', icon: '🏆', type: 'win', target: 'hallWin' },
       { name: 'Code.js', icon: '💻', type: 'win', target: 'codeWin' },
     ],
   },
