@@ -8,6 +8,7 @@ import { StartMenu } from './StartMenu'
 import { ContextMenu } from './ContextMenu'
 import { Clippy } from './Clippy'
 import { Notifications } from './Notifications'
+import Assistant from './Assistant'
 
 const desktopIcons = APPS.filter((a) => a.desktop)
 
@@ -15,6 +16,7 @@ export function Desktop() {
   const windows = useOS((s) => s.windows)
   const setCtx = useOS((s) => s.setCtx)
   const setStartOpen = useOS((s) => s.setStartOpen)
+  const assistantOpen = useOS((s) => s.assistantOpen)
 
   const openWindows = APPS.filter((a) => windows[a.id]?.open)
 
@@ -74,6 +76,7 @@ export function Desktop() {
       <ContextMenu />
       <Clippy />
       <Notifications />
+      {assistantOpen && <Assistant />}
     </>
   )
 }

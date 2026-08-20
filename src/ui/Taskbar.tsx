@@ -50,6 +50,7 @@ export function Taskbar() {
         })}
       </div>
       <div className="tb-tray">
+        <span className="tb-tray-icon" onClick={() => { clickSnd(); useOS.getState().setAssistant(!useOS.getState().assistantOpen) }} title="SM-Assistant">🤖</span>
         <span className="tb-tray-icon" onClick={() => { clickSnd(); toggleMuted() }} title="Sound">
           {muted ? '🔇' : '🔊'}
         </span>

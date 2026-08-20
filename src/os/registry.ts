@@ -22,6 +22,11 @@ const Recycle = lazy(() => import('../apps/Recycle'))
 const Browser = lazy(() => import('../apps/Browser'))
 const ResumeViewer = lazy(() => import('../apps/ResumeViewer'))
 const WebView = lazy(() => import('../apps/WebView'))
+const TaskManager = lazy(() => import('../apps/TaskManager'))
+const Weather = lazy(() => import('../apps/Weather'))
+const MusicPlayer = lazy(() => import('../apps/MusicPlayer'))
+const Paint = lazy(() => import('../apps/Paint'))
+const Notepad = lazy(() => import('../apps/Notepad'))
 
 export interface AppMeta {
   id: string
@@ -56,6 +61,11 @@ export const APPS: AppMeta[] = [
   { id: 'hallWin', icon: '🏆', label: 'HALL OF FAME', title: 'HALL_OF_FAME.EXE — Top Players', w: 660, h: 620, component: HallOfFame, desktop: true, menu: true },
   { id: 'recycleWin', icon: '🗑', label: 'RECYCLE', title: 'RECYCLE BIN', w: 380, h: 360, component: Recycle, desktop: true, menu: false },
   { id: 'resumeWin', icon: '📄', label: 'RESUME', title: 'RESUME_VIEWER.EXE — Shreenidhi_M_Resume.pdf', w: 640, h: 560, component: ResumeViewer, desktop: true, menu: false },
+  { id: 'notepadWin', icon: '📝', label: 'NOTEPAD', title: 'NOTEPAD.EXE — Notes', w: 480, h: 420, component: Notepad, desktop: true, menu: true },
+  { id: 'paintWin', icon: '🎨', label: 'PAINT', title: 'PAINT.EXE — Canvas', w: 620, h: 500, component: Paint, desktop: true, menu: true },
+  { id: 'musicWin', icon: '🎵', label: 'MUSIC', title: 'SM-MUSIC.EXE — Player', w: 380, h: 460, component: MusicPlayer, desktop: true, menu: true },
+  { id: 'weatherWin', icon: '🌤', label: 'WEATHER', title: 'WEATHER.EXE — Live Forecast', w: 360, h: 480, component: Weather, desktop: true, menu: true },
+  { id: 'taskmgrWin', icon: '📊', label: 'TASK MANAGER', title: 'TASKMGR.EXE — System Monitor', w: 430, h: 520, component: TaskManager, desktop: true, menu: true },
   { id: 'webWin', icon: '🌐', label: 'SITE VIEWER', title: 'WEB_VIEW.EXE — External Page', w: 680, h: 540, component: WebView, desktop: false, menu: false },
   ...Array.from({ length: 9 }, (_, i) => ({
     id: 'webWin-' + (i + 1),
