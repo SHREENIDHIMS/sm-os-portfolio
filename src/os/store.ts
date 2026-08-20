@@ -25,6 +25,11 @@ export interface Notif {
   msg: string
 }
 
+export interface IconPos {
+  x: number
+  y: number
+}
+
 export interface PersistedSettings {
   theme: ThemeName
   wallpaper: number
@@ -47,12 +52,14 @@ interface OSState extends PersistedSettings {
   assistantOpen: boolean
   webUrl: string
   webUrls: Record<string, string>
+  iconPos: Record<string, IconPos>
 
   setPhase: (p: Phase) => void
   shutdownOS: () => void
   openWin: (id: string, w: number, h: number) => void
   openWebUrl: (url: string) => void
   navigateWeb: (id: string, url: string) => void
+  setIconPos: (id: string, x: number, y: number) => void
   closeWin: (id: string) => void
   minimizeWin: (id: string) => void
   toggleMaximize: (id: string) => void
@@ -112,6 +119,7 @@ export const useOS = create<OSState>()(
       assistantOpen: false,
       webUrl: '',
       webUrls: {},
+      iconPos: {},
 
       setPhase: (p) => set({ phase: p }),
       shutdownOS: () => {
@@ -178,6 +186,9 @@ export const useOS = create<OSState>()(
 
       navigateWeb: (id, url) =>
         set((s) => ({ webUrls: { ...s.webUrls, [id]: url } })),
+
+      setIconPos: (id, x, y) =>
+        set((s) => ({ iconPos: { ...s.iconPos, [id]: { x, y } } })),
 
       closeWin: (id) =>
         set((s) => ({
@@ -290,7 +301,7 @@ export const useOS = create<OSState>()(
     }),
     {
       name: 'sm-os-settings',
-      partialize: (s) => ({ theme: s.theme, wallpaper: s.wallpaper, muted: s.muted, scanlines: s.scanlines }),
+      partialize: (s) => ({ theme: s.theme, wallpaper: s.wallpaper, muted: s.muted, scanlines: s.scanlines, iconPos: s.iconPos }),
       storage: createJSONStorage(() => ({
         getItem: (n) => (typeof window !== 'undefined' ? window.localStorage.getItem(n) : null),
         setItem: (n, v) => {

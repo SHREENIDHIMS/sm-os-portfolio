@@ -47,7 +47,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 #desktop.visible{display:block;}
 #wpCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
 #desktopOverlay{position:absolute;inset:0;z-index:1;pointer-events:none;}
-#desktopIcons{position:absolute;top:28px;right:6px;z-index:5;display:grid;grid-template-columns:repeat(2,70px);gap:4px;max-height:calc(100vh - 80px);overflow-y:auto;padding:4px;}
+#desktopIcons{position:absolute;inset:0;z-index:5;pointer-events:none;}
 .status-bar-top{position:absolute;top:6px;left:6px;z-index:5;display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:10px;}
 
 /* ===== TASKBAR ===== */
@@ -101,7 +101,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 @keyframes blink{50%{opacity:0.2;}}
 
 /* ===== DESKTOP ICON ===== */
-.desk-icon{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:70px;padding:5px 2px;border:1px solid transparent;transition:all 0.12s;text-align:center;border-radius:2px;}
+.desk-icon{position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:70px;padding:5px 2px;border:1px solid transparent;transition:background 0.12s,border-color 0.12s;text-align:center;border-radius:2px;pointer-events:auto;touch-action:none;}
 .desk-icon:hover{background:rgba(255,255,255,0.1);border-color:rgba(200,200,255,0.4);}
 .desk-icon.selected{background:rgba(0,0,200,0.45);border-color:rgba(200,200,255,0.7);}
 .desk-icon .di-ico{font-size:28px;line-height:1;}
@@ -387,7 +387,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   .tb-tray-icon{padding:0 6px;font-size:14px;}
   .tb-clock{min-width:64px;font-size:15px;padding:0 6px;}
   .status-bar-top{display:none;}
-  #desktopIcons{grid-template-columns:repeat(2,64px);}
+  .desk-icon .di-ico{font-size:24px;}
+  .desk-icon .di-lbl{font-size:11px;}
 }
 
 /* ===== ARCADE HIGH SCORES ===== */
