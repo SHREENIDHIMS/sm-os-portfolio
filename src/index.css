@@ -204,6 +204,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .retro-btn{font-family:var(--font-vt);font-size:18px;padding:4px 16px;cursor:pointer;border:2px outset #c0c0c0;background:#000060;color:#00ff00;margin-top:8px;transition:background 0.1s;}
 .retro-btn:hover{background:rgba(0,255,0,0.12);}
 .retro-btn:active{border-style:inset;}
+.retro-btn.sel{background:#00aa00;color:#000;border-color:#00ff00;box-shadow:0 0 8px rgba(0,255,0,.6);}
 
 /* D-PAD */
 .snake-dpad{display:none;flex-direction:column;align-items:center;gap:4px;margin-top:0;}
@@ -334,5 +335,17 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .arcade-modal-box{background:#000040;border:3px outset #c0c0c0;padding:24px 32px;text-align:center;box-shadow:8px 8px 0 rgba(0,0,0,.5);}
 .arcade-input{font-family:var(--font-vt);font-size:22px;letter-spacing:3px;text-transform:uppercase;text-align:center;background:#000020;color:#00ff00;border:2px solid #00ff00;padding:6px 10px;margin-top:10px;width:220px;outline:none;caret-color:#ffcc00;}
 .arcade-input::placeholder{color:#335533;}
+.arcade-namefield{margin:0 auto;}
+.arcade-input-sm{width:190px;font-size:17px;padding:4px 8px;margin-top:4px;letter-spacing:2px;}
+.arcade-err{color:#ff6666;font-family:var(--font-mono);font-size:10px;margin-top:4px;text-align:center;}
 .hof-grid{display:grid;grid-template-columns:1fr;gap:14px;align-items:start;}
 @media(min-width:520px){.hof-grid{grid-template-columns:repeat(3,1fr);}}
+
+/* ===== SCREENSAVER ===== */
+#screensaver{position:fixed;inset:0;z-index:9000;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:none;}
+.sa-banner{font-family:var(--font-vt);font-size:clamp(80px,18vw,200px);color:#00ff00;letter-spacing:12px;text-shadow:0 0 30px rgba(0,255,0,.7);animation:sa-float 4s ease-in-out infinite;}
+.sa-sub{font-family:var(--font-mono);font-size:12px;color:#6688aa;margin-top:14px;letter-spacing:2px;}
+.sa-rain{position:absolute;inset:0;font-family:'Share Tech Mono',monospace;font-size:18px;color:rgba(0,220,60,0.35);}
+.sa-rain span{position:absolute;top:-40px;animation:sa-fall 9s linear infinite;}
+@keyframes sa-fall{to{transform:translateY(110vh);}}
+@keyframes sa-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}

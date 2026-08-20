@@ -43,6 +43,9 @@ export function StartMenu() {
         {meta.icon} Resume
       </button>
       <div className="sm-sep" />
+      <button className="sm-item" onClick={() => { clickSnd(); setStartOpen(false); useOS.getState().setScreensaver(true) }}>
+        💤 Screensaver
+      </button>
       <button className="sm-item" style={{ color: '#ff8888' }} onClick={() => { clickSnd(); setStartOpen(false); useOS.getState().shutdownOS() }}>
         ⏻ Shut Down
       </button>

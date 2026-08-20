@@ -2,12 +2,17 @@ import { useEffect, useState } from 'react'
 import { WinBody, WinStatusbar, StatusPanel } from '../ui/Window'
 import { clickSnd, beep } from '../os/sound'
 import { useOS } from '../os/store'
-import { qualifies, formatScore } from '../os/leaderboard'
-import { ScoreTable, NameEntry } from '../ui/ArcadeScores'
+import { submitScore, getPlayerName, formatScore } from '../os/leaderboard'
+import type { GameId } from '../os/leaderboard'
+import { ScoreTable, NameField } from '../ui/ArcadeScores'
 
-const COLS = 9
-const ROWS = 9
-const MINES = 10
+type Diff = 'easy' | 'medium' | 'hard'
+
+const DIFFS: Record<Diff, { rows: number; cols: number; mines: number; label: string }> = {
+  easy: { rows: 9, cols: 9, mines: 10, label: 'EASY' },
+  medium: { rows: 16, cols: 16, mines: 40, label: 'MEDIUM' },
+  hard: { rows: 16, cols: 30, mines: 99, label: 'HARD' },
+}
 
 interface Cell {
   mine: boolean
@@ -16,46 +21,55 @@ interface Cell {
   n: number
 }
 
-function makeGrid(): Cell[][] {
-  const g: Cell[][] = Array.from({ length: ROWS }, () =>
-    Array.from({ length: COLS }, () => ({ mine: false, open: false, flag: false, n: 0 })),
+function makeGrid(rows: number, cols: number, mines: number): Cell[][] {
+  const g: Cell[][] = Array.from({ length: rows }, () =>
+    Array.from({ length: cols }, () => ({ mine: false, open: false, flag: false, n: 0 })),
   )
   let placed = 0
-  while (placed < MINES) {
-    const r = Math.floor(Math.random() * ROWS)
-    const c = Math.floor(Math.random() * COLS)
+  while (placed < mines) {
+    const r = Math.floor(Math.random() * rows)
+    const c = Math.floor(Math.random() * cols)
     if (!g[r][c].mine) {
       g[r][c].mine = true
       placed++
     }
   }
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
+  recomputeCounts(g)
+  return g
+}
+
+function recomputeCounts(g: Cell[][]) {
+  const rows = g.length
+  const cols = g[0].length
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
       if (!g[r][c].mine) {
         let n = 0
         for (let dr = -1; dr <= 1; dr++)
           for (let dc = -1; dc <= 1; dc++) {
             const rr = r + dr
             const cc = c + dc
-            if (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && g[rr][cc].mine) n++
+            if (rr >= 0 && rr < rows && cc >= 0 && cc < cols && g[rr][cc].mine) n++
           }
         g[r][c].n = n
       }
     }
   }
-  return g
 }
 
 export default function Minesweeper() {
-  const [grid, setGrid] = useState<Cell[][]>(() => makeGrid())
+  const [diff, setDiff] = useState<Diff>('easy')
+  const d = DIFFS[diff]
+  const [grid, setGrid] = useState<Cell[][]>(() => makeGrid(d.rows, d.cols, d.mines))
   const [lost, setLost] = useState(false)
   const [won, setWon] = useState(false)
   const [flags, setFlags] = useState(0)
   const [started, setStarted] = useState(false)
   const [time, setTime] = useState(0)
   const [winTime, setWinTime] = useState(0)
-  const [qualified, setQualified] = useState(false)
-  const [saved, setSaved] = useState(false)
+  const [nameErr, setNameErr] = useState(false)
+
+  const board: GameId = ('minesweeper-' + diff) as GameId
 
   useEffect(() => {
     if (!started || won || lost) return
@@ -63,12 +77,40 @@ export default function Minesweeper() {
     return () => window.clearInterval(t)
   }, [started, won, lost])
 
+  const changeDiff = (nd: Diff) => {
+    clickSnd()
+    const ndd = DIFFS[nd]
+    setDiff(nd)
+    setGrid(makeGrid(ndd.rows, ndd.cols, ndd.mines))
+    setLost(false)
+    setWon(false)
+    setFlags(0)
+    setStarted(false)
+    setTime(0)
+    setWinTime(0)
+  }
+
   const reveal = (r: number, c: number) => {
     if (lost || won) return
+    if (!started && !getPlayerName().trim()) {
+      setNameErr(true)
+      document.getElementById('arcadeName')?.focus()
+      return
+    }
     clickSnd()
     if (!started) setStarted(true)
     let next = grid.map((row) => row.map((cell) => ({ ...cell })))
     if (next[r][c].flag || next[r][c].open) return
+    if (!started && next[r][c].mine) {
+      next[r][c].mine = false
+      const spots: [number, number][] = []
+      for (let rr = 0; rr < d.rows; rr++)
+        for (let cc = 0; cc < d.cols; cc++)
+          if (!next[rr][cc].mine && !(rr === r && cc === c)) spots.push([rr, cc])
+      const [mr, mc] = spots[(Math.random() * spots.length) | 0]
+      next[mr][mc].mine = true
+      recomputeCounts(next)
+    }
     if (next[r][c].mine) {
       next = next.map((row) => row.map((cell) => ({ ...cell, open: cell.mine ? true : cell.open })))
       setGrid(next)
@@ -87,19 +129,19 @@ export default function Minesweeper() {
             if (dr === 0 && dc === 0) continue
             const r2 = rr + dr
             const c2 = cc + dc
-            if (r2 >= 0 && r2 < ROWS && c2 >= 0 && c2 < COLS) flood(r2, c2)
+            if (r2 >= 0 && r2 < d.rows && c2 >= 0 && c2 < d.cols) flood(r2, c2)
           }
       }
     }
     flood(r, c)
     setGrid(next)
     const opened = next.flat().filter((cell) => cell.open).length
-    if (opened === COLS * ROWS - MINES) {
+    if (opened === d.rows * d.cols - d.mines) {
       setWon(true)
       setWinTime(time)
-      setQualified(qualifies('minesweeper', time))
+      submitScore(board, getPlayerName(), time)
       beep(880, 0.12, 'sine', 0.12)
-      useOS.getState().notify('MINESWEEPER.EXE', '🏆 You cleared the minefield in ' + formatScore('minesweeper', time) + '!')
+      useOS.getState().notify('MINESWEEPER.EXE', '🏆 You cleared the minefield in ' + formatScore(board, time) + '!')
     }
   }
 
@@ -115,43 +157,62 @@ export default function Minesweeper() {
 
   const reset = () => {
     clickSnd()
-    setGrid(makeGrid())
+    setGrid(makeGrid(d.rows, d.cols, d.mines))
     setLost(false)
     setWon(false)
     setFlags(0)
     setStarted(false)
     setTime(0)
     setWinTime(0)
-    setQualified(false)
-    setSaved(false)
   }
+
+  const cellPx = Math.max(9, Math.min(32, Math.floor(340 / d.cols)))
 
   return (
     <>
       <WinBody>
         {!started && (
           <div style={{ marginBottom: 8 }}>
-            <ScoreTable game="minesweeper" limit={3} title="BEST TIMES" />
+            <ScoreTable game={board} limit={3} title="BEST TIMES" />
+            <div style={{ marginTop: 6 }}>
+              <NameField onChange={() => setNameErr(false)} />
+              {nameErr && <div className="arcade-err">⚠ TYPE YOUR NAME TO PLAY</div>}
+            </div>
           </div>
         )}
-        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+        <div style={{ textAlign: 'center', marginBottom: 6 }}>
           <span style={{ fontFamily: 'var(--font-vt)', fontSize: 22, color: '#00ff00' }}>MINESWEEPER.EXE</span>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa' }}>
-            {won ? '🎉 CLEARED!' : lost ? '💥 BOOM!' : `${MINES} mines · ${ROWS}x${COLS} · Right-click to flag`}
+            {won ? '🎉 CLEARED!' : lost ? '💥 BOOM!' : `${d.mines} mines · ${d.rows}x${d.cols} · Right-click to flag`}
           </div>
-          <button className="retro-btn" style={{ fontSize: 15, padding: '2px 12px', marginTop: 6 }} onClick={reset}>[ NEW GAME ]</button>
+          <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginTop: 6 }}>
+            {(Object.keys(DIFFS) as Diff[]).map((kd) => (
+              <button
+                key={kd}
+                className={'retro-btn' + (diff === kd ? ' sel' : '')}
+                style={{ fontSize: 13, padding: '1px 8px', marginTop: 0 }}
+                onClick={() => changeDiff(kd)}
+              >
+                {DIFFS[kd].label}
+              </button>
+            ))}
+            <button className="retro-btn" style={{ fontSize: 13, padding: '1px 8px', marginTop: 0 }} onClick={reset}>
+              [ NEW ]
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-vt)', fontSize: 18, color: '#ffcc00' }}>
-          <span>MINES: <span style={{ color: '#fff' }}>{MINES - flags}</span></span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-vt)', fontSize: 16, color: '#ffcc00' }}>
+          <span>MINES: <span style={{ color: '#fff' }}>{d.mines - flags}</span></span>
           <span>TIME: <span style={{ color: '#fff' }}>{time}s</span></span>
           <span>FLAGS: <span style={{ color: '#fff' }}>{flags}</span></span>
         </div>
-        <div className="mine-grid" style={{ gridTemplateColumns: `repeat(${COLS},32px)` }}>
+        <div className="mine-grid" style={{ gridTemplateColumns: `repeat(${d.cols},${cellPx}px)` }}>
           {grid.map((row, r) =>
             row.map((cell, c) => (
               <button
                 key={r + '-' + c}
                 className={'mine-cell' + (cell.open ? ' open' : '') + (cell.mine && cell.open ? ' bomb' : '') + (cell.n > 0 && cell.open ? ' n' + cell.n : '')}
+                style={{ width: cellPx, height: cellPx, fontSize: Math.max(9, cellPx - 8) }}
                 onClick={() => reveal(r, c)}
                 onContextMenu={(e) => {
                   e.preventDefault()
@@ -166,22 +227,15 @@ export default function Minesweeper() {
         {won && (
           <div style={{ textAlign: 'center', marginTop: 12 }}>
             <div style={{ fontFamily: 'var(--font-vt)', fontSize: 20, color: '#00ff00' }}>🏆 CLEARED!</div>
-            <div style={{ fontFamily: 'var(--font-vt)', fontSize: 18, color: '#ffcc00', margin: '4px 0 8px' }}>TIME: {formatScore('minesweeper', winTime)}</div>
-            <ScoreTable game="minesweeper" limit={5} title="BEST TIMES" />
+            <div style={{ fontFamily: 'var(--font-vt)', fontSize: 18, color: '#ffcc00', margin: '4px 0 8px' }}>TIME: {formatScore(board, winTime)}</div>
+            <ScoreTable game={board} limit={5} title="BEST TIMES" />
             <button className="retro-btn" style={{ fontSize: 15, padding: '2px 12px' }} onClick={reset}>[ PLAY AGAIN ]</button>
           </div>
-        )}
-        {won && qualified && !saved && (
-          <NameEntry
-            game="minesweeper"
-            score={winTime}
-            onDone={() => setSaved(true)}
-            onSkip={() => setQualified(false)}
-          />
         )}
       </WinBody>
       <WinStatusbar>
         <StatusPanel>{won ? 'WINNER' : lost ? 'GAME OVER' : 'SAFE'}</StatusPanel>
+        <StatusPanel>{d.label} · {d.rows}x{d.cols}</StatusPanel>
         <StatusPanel>click · right-click</StatusPanel>
       </WinStatusbar>
     </>

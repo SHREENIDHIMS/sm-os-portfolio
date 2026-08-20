@@ -95,6 +95,7 @@ export default function Terminal() {
         append('green', '  FILES:   ls, pwd, cat [about|skills]')
         append('green', '  SYSTEM:  whoami, uname, date, clear, exit')
         append('green', '           history, w, sysinfo, sudo')
+        append('green', '  POWER:   screensaver [on|off], power')
         append('green', '  LINKS:   resume, linkedin, github')
         append('green', '  THEME:   theme [blue|amber|red|green|purple]')
         append('green', '  WP:      wallpaper [0-5]')
@@ -280,6 +281,19 @@ export default function Terminal() {
         break
       case 'fortune':
         append('amber', FORTUNES[Math.floor(Math.random() * FORTUNES.length)])
+        break
+      case 'screensaver':
+      case 'power':
+        if (arg === 'off') {
+          useOS.getState().setScreensaver(false)
+          append('green', '→ Screensaver off')
+        } else if (arg === 'on' || cmd === 'power') {
+          useOS.getState().setScreensaver(true)
+          append('green', '→ Screensaver activated (press any key to return)')
+        } else {
+          useOS.getState().setScreensaver(true)
+          append('green', '→ Screensaver activated (press any key to return)')
+        }
         break
       default:
         append('red', `bash: ${cmd}: command not found. Type 'help' for commands.`)

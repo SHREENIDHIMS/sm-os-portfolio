@@ -138,10 +138,10 @@ The boot screen plays the animated boot progress bar and typing welcome text, th
 | `codeWin`   | Code Playground  | 💻   | In-browser JS eval                              |
 | `clockWin`  | Clock            | 🕐   | Live clock + calendar                           |
 | `browserWin`| Browser          | 🌐   | Iframe web browser                              |
-| `snakeWin`  | Snake            | 🐍   | Arcade game + high scores                       |
-| `memoryWin` | Memory           | 🃏   | Match pairs + high scores                       |
-| `mineWin`   | Minesweeper      | 💣   | Classic minesweeper + timer + high scores       |
-| `hallWin`   | Hall of Fame     | 🏆   | All high-score boards in one window             |
+| `snakeWin`  | Snake            | 🐍   | Arcade game, 3 difficulties, speed ramp + high scores |
+| `memoryWin` | Memory           | 🃏   | Match pairs, timer + difficulty + high scores          |
+| `mineWin`   | Minesweeper      | 💣   | 3 difficulty grids, first-click-safe, timer + high scores |
+| `hallWin`   | Hall of Fame     | 🏆   | All high-score boards (every game & difficulty)         |
 | `recycleWin`| Recycle Bin      | 🗑   | Eject-cartoon joke app                          |
 | `resumeWin` | Resume Viewer    | 📄   | Shows `public/Shreenidhi_M_Resume.pdf` in-app   |
 
@@ -151,27 +151,33 @@ The boot screen plays the animated boot progress bar and typing welcome text, th
 
 ### Scoring rules
 
-| Game        | Score                | Winner   | Sort      |
-| ----------- | -------------------- | -------- | --------- |
-| Snake       | Points (`+10` per food) | Highest | Descending |
-| Memory      | Moves to clear       | Fewest   | Ascending |
-| Minesweeper | Clear time (seconds) | Fastest  | Ascending |
+| Game | Score | Winner | Sort | Leaderboard key |
+| ---- | ----- | ------ | ---- | --------------- |
+| Snake (easy/normal/hard) | Points (`+10` per food) | Highest | Descending | `sm-os-scores-snake` |
+| Memory (easy/normal/hard) | Clear time (seconds) | Fastest | Ascending | `sm-os-scores-memory-<diff>` |
+| Minesweeper (easy/medium/hard) | Clear time (seconds) | Fastest | Ascending | `sm-os-scores-minesweeper-<diff>` |
+
+Each difficulty has its **own leaderboard** so new players see the scores they need to beat on the exact board they chose.
 
 ### How it works — `src/os/leaderboard.ts`
 
-- Each game stores a top-5 list under its own `localStorage` key: `sm-os-scores-snake`, `sm-os-scores-memory`, `sm-os-scores-minesweeper`.
-- `getScores(game)` reads and sorts the board; `qualifies(game, score)` returns `true` if the board isn't full or the score beats the current worst entry; `submitScore(game, name, score)` inserts, trims to 5 and persists.
-- `formatScore(game, score)` renders time as `1:25` / `9s` for Minesweeper, plain numbers otherwise.
+- Every game+difficulty stores a top-5 list under its own `localStorage` key.
+- `getScores(game)` reads and sorts the board; `submitScore(game, name, score)` inserts, trims to 5 and persists.
+- A **shared player name** (`sm-os-player-name`) is read/written via `getPlayerName()` / `setPlayerName()`.
+- `formatScore(game, score)` renders time scores as `1:25` / `9s`, plain numbers otherwise.
 
 ### UX flow (shared by all three games)
 
-1. Before playing, the **start screen shows the current top players** so the new user sees what to beat.
-2. On game over / win, if the score qualifies, a retro **`ENTER YOUR NAME`** modal (`NameEntry` in `src/ui/ArcadeScores.tsx`) appears — max 12 chars, uppercase, `Enter` saves, `Esc` skips.
-3. The board is re-rendered with the new entry; the **Hall of Fame** window shows all boards at once.
+1. Each game's start screen shows a **`PLAYER NAME`** field (pre-filled with the saved name) plus the current top players — so a new player enters their name once and sees what to beat.
+2. The name is saved to `localStorage` as they type, so it carries across all three games and all future visits.
+3. When a game ends, the score is **auto-saved** under that name (no post-game prompt) and the updated board is shown.
+4. The **Hall of Fame** window shows all boards (Snake + all Memory and Minesweeper difficulties) at once.
 
-### Minesweeper timer
+### Game details
 
-The timer starts on the first reveal and stops on win/loss (managed by a `useEffect` interval keyed on `started`/`won`/`lost`). Only winning times make the board.
+- **Snake**: difficulty select on the start screen (Easy/Normal/Hard); speed ramps up by 4 ms per food eaten (floor 55 ms) so it gets harder as you grow.
+- **Memory**: difficulty changes the number of pairs (6/8/10); a timer starts on the first flip; the leaderboard score is your clear time.
+- **Minesweeper**: Easy 9×9/10, Medium 16×16/40, Hard 16×30/99 with adaptive cell size; the **first click can never detonate a mine** (a mine on the clicked cell is relocated); timer starts on the first click and only winning times make the board.
 
 ---
 
@@ -186,6 +192,8 @@ Typing welcome sequence runs on open, then a live prompt accepts commands (`↑`
 **Files**: `ls`, `pwd`, `cat [about|skills]`, `history`, `clear`, `exit`
 
 **System**: `whoami`, `uname`, `date`, `neofetch`, `w`, `sysinfo`, `sudo`, `theme [blue|amber|red|green|purple]`, `wallpaper [0-5]`
+
+**Power**: `screensaver [on|off]`, `power` (launches the screensaver)
 
 **Links**: `resume`, `linkedin`, `github`
 
@@ -212,6 +220,12 @@ Unknown commands print `bash: <cmd>: command not found`.
 
 ---
 
+## Screensaver
+
+Launchable from the Start menu (💤 Screensaver), the `screensaver` / `power` terminal commands, or… any time you want a break. Shows a falling-matrix rain with a bouncing `SM-OS` banner; **any key, click, or scroll** dismisses it and returns to the desktop.
+
+---
+
 ## Themes & Wallpapers
 
 - **Themes**: `blue`, `amber`, `red`, `green`, `purple` — switched in the Display app, via `theme` terminal command, or persisted setting.
@@ -224,11 +238,19 @@ Unknown commands print `bash: <cmd>: command not found`.
 | Key                       | Purpose                          |
 | ------------------------- | -------------------------------- |
 | `sm-os-settings`          | theme, wallpaper, muted, scanlines |
+| `sm-os-player-name`       | shared arcade player name         |
 | `sm-os-scores-snake`      | Snake top-5 board                 |
-| `sm-os-scores-memory`     | Memory top-5 board                |
-| `sm-os-scores-minesweeper`| Minesweeper top-5 board           |
+| `sm-os-scores-memory-<diff>` | Memory top-5 per difficulty     |
+| `sm-os-scores-minesweeper-<diff>` | Minesweeper top-5 per difficulty |
 
 Scores are per-browser/machine (no backend — works on a static host).
+
+---
+
+## Performance & SEO
+
+- **Code-splitting**: every app is `React.lazy`-loaded and rendered inside a `Suspense` boundary in the window chrome, so the initial bundle only contains the OS shell + the first app you open.
+- **SEO / Open Graph**: `index.html` ships title, description, `og:`/`twitter:` tags and a generated 1200×630 preview image (`public/og.png`) so links look sharp when shared. Update the canonical `og:url` / `og:image` domain in `index.html` if your Vercel domain differs from `sm-os-portfolio.vercel.app`.
 
 ---
 

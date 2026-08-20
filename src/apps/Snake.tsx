@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { WinBody, WinStatusbar, StatusPanel } from '../ui/Window'
 import { clickSnd, beep } from '../os/sound'
-import { qualifies } from '../os/leaderboard'
-import { ScoreTable, NameEntry } from '../ui/ArcadeScores'
+import { submitScore, getPlayerName } from '../os/leaderboard'
+import { ScoreTable, NameField } from '../ui/ArcadeScores'
 
 const SZ = 20
-const SPD = 155
+const BASE_SPD: Record<string, number> = { easy: 210, normal: 155, hard: 110 }
+const speedFor = (d: string, eaten: number) => Math.max(55, (BASE_SPD[d] ?? 155) - eaten * 4)
 
 interface Pt {
   x: number
@@ -22,8 +23,9 @@ interface Game {
   running: boolean
   over: boolean
   started: boolean
-  pending: boolean
   saved: boolean
+  eaten: number
+  diff: string
 }
 
 const fresh = (): Game => ({
@@ -36,13 +38,16 @@ const fresh = (): Game => ({
   running: false,
   over: false,
   started: false,
-  pending: false,
   saved: false,
+  eaten: 0,
+  diff: 'normal',
 })
 
 export default function Snake() {
   const g = useRef<Game>(fresh())
   const [, force] = useState(0)
+  const [diff, setDiff] = useState<'easy' | 'normal' | 'hard'>('normal')
+  const [nameErr, setNameErr] = useState(false)
   const timer = useRef<number | null>(null)
   const boardRef = useRef<HTMLDivElement>(null)
   const render = () => force((n) => n + 1)
@@ -85,12 +90,17 @@ export default function Snake() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started])
 
-  const start = () => {
+  const start = (d: string = 'normal') => {
+    if (!getPlayerName().trim()) {
+      setNameErr(true)
+      document.getElementById('arcadeName')?.focus()
+      return
+    }
     clickSnd()
     if (timer.current) clearInterval(timer.current)
     const s = [{ x: 10, y: 10 }]
-    Object.assign(g.current, fresh(), { snake: s, food: randFood(s), running: true, started: true })
-    timer.current = window.setInterval(step, SPD)
+    Object.assign(g.current, fresh(), { snake: s, food: randFood(s), running: true, started: true, diff: d })
+    timer.current = window.setInterval(step, speedFor(d, 0))
     render()
   }
 
@@ -111,7 +121,8 @@ export default function Snake() {
       game.running = false
       if (timer.current) clearInterval(timer.current)
       if (game.score > game.hi) game.hi = game.score
-      game.pending = qualifies('snake', game.score)
+      submitScore('snake', getPlayerName(), game.score)
+      game.saved = true
       beep(200, 0.3, 'sawtooth', 0.1)
       render()
       return
@@ -121,7 +132,10 @@ export default function Snake() {
     if (ate) {
       game.snake = [head, ...game.snake]
       game.score += 10
+      game.eaten++
       game.food = randFood(game.snake)
+      if (timer.current) clearInterval(timer.current)
+      timer.current = window.setInterval(step, speedFor(game.diff, game.eaten))
       beep(660, 0.05, 'sine', 0.08)
     } else {
       game.snake = [head, ...game.snake.slice(0, -1)]
@@ -161,7 +175,23 @@ export default function Snake() {
           <div style={{ textAlign: 'center', padding: 20 }}>
             <div style={{ fontFamily: 'var(--font-vt)', fontSize: 'clamp(40px,10vw,80px)', color: '#10860c', letterSpacing: 2, lineHeight: 0.9 }}>SNAKE v2.0</div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#6688aa', margin: '10px 0' }}>Arrow keys / WASD / D-Pad / Swipe</div>
-            <button className="retro-btn" onClick={start}>[ START GAME ]</button>
+            <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+              {(['easy', 'normal', 'hard'] as const).map((d) => (
+                <button
+                  key={d}
+                  className={'retro-btn' + (diff === d ? ' sel' : '')}
+                  style={{ fontSize: 14, padding: '2px 10px', marginTop: 0 }}
+                  onClick={() => setDiff(d)}
+                >
+                  {d.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <div style={{ marginTop: 8 }}>
+              <NameField onChange={() => setNameErr(false)} />
+              {nameErr && <div className="arcade-err">⚠ TYPE YOUR NAME TO PLAY</div>}
+            </div>
+            <button className="retro-btn" onClick={() => start(diff)}>[ START GAME ]</button>
             <div style={{ marginTop: 12 }}>
               <ScoreTable game="snake" limit={3} title="TOP PLAYERS" />
             </div>
@@ -195,35 +225,19 @@ export default function Snake() {
               ))}
               <div className="snake-cell snake-food" style={{ left: game.food.x * cellPx, top: game.food.y * cellPx, width: cellPx, height: cellPx }} />
               <div className={'snake-overlay' + (game.over ? ' vis' : '')}>
-                {game.pending ? (
-                  <NameEntry
-                    game="snake"
-                    score={game.score}
-                    onDone={() => {
-                      g.current.pending = false
-                      g.current.saved = true
-                      render()
-                    }}
-                    onSkip={() => {
-                      g.current.pending = false
-                      render()
-                    }}
-                  />
-                ) : (
-                  <>
-                    <div>GAME OVER</div>
-                    <div style={{ color: '#ffcc00', fontSize: 18, marginTop: 5 }}>Score: {game.score}</div>
-                    {game.saved && (
-                      <div style={{ marginTop: 8 }}>
-                        <ScoreTable game="snake" limit={3} title="TOP PLAYERS" />
-                      </div>
-                    )}
-                    <button className="retro-btn" onClick={start}>[ RETRY ]</button>
-                  </>
-                )}
+                <>
+                  <div>GAME OVER</div>
+                  <div style={{ color: '#ffcc00', fontSize: 18, marginTop: 5 }}>Score: {game.score}</div>
+                  {game.saved && (
+                    <div style={{ marginTop: 8 }}>
+                      <ScoreTable game="snake" limit={3} title="TOP PLAYERS" />
+                    </div>
+                  )}
+                  <button className="retro-btn" onClick={() => start(game.diff)}>[ RETRY ]</button>
+                </>
               </div>
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa' }}>Walls wrap · Avoid your tail</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa' }}>{game.diff.toUpperCase()} MODE · Walls wrap · Avoid your tail</div>
             <div className="snake-dpad">
               <div className="dpad-row"><div className="dpad-center" /><button className="dpad-btn" onClick={() => setDir('UP')}>▲</button><div className="dpad-center" /></div>
               <div className="dpad-row"><button className="dpad-btn" onClick={() => setDir('LEFT')}>◀</button><div className="dpad-center" /><button className="dpad-btn" onClick={() => setDir('RIGHT')}>▶</button></div>
