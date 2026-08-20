@@ -81,7 +81,7 @@ export function Window({ meta }: Props) {
           </div>
         }
       >
-        <App />
+        <App winId={meta.id} />
       </Suspense>
     </div>
   )

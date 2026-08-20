@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useOS } from './os/store'
 import { useThemeEffect, useShortcuts } from './hooks/useOSEffects'
 import { Boot } from './ui/Boot'
@@ -10,6 +11,23 @@ export default function App() {
   const screensaver = useOS((s) => s.screensaver)
   useThemeEffect()
   useShortcuts()
+
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem('sm-os-booted')) useOS.getState().setPhase('desktop')
+    } catch {
+      /* storage unavailable */
+    }
+  }, [])
+
+  useEffect(() => {
+    if (phase !== 'desktop') return
+    try {
+      window.sessionStorage.setItem('sm-os-booted', '1')
+    } catch {
+      /* storage unavailable */
+    }
+  }, [phase])
 
   if (phase === 'desktop')
     return (

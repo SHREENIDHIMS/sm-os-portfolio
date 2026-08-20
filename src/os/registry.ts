@@ -21,6 +21,7 @@ const HallOfFame = lazy(() => import('../apps/HallOfFame'))
 const Recycle = lazy(() => import('../apps/Recycle'))
 const Browser = lazy(() => import('../apps/Browser'))
 const ResumeViewer = lazy(() => import('../apps/ResumeViewer'))
+const WebView = lazy(() => import('../apps/WebView'))
 
 export interface AppMeta {
   id: string
@@ -29,7 +30,7 @@ export interface AppMeta {
   title: string
   w: number
   h: number
-  component: ComponentType
+  component: ComponentType<{ winId?: string }>
   desktop?: boolean
   menu?: boolean
 }
@@ -55,6 +56,18 @@ export const APPS: AppMeta[] = [
   { id: 'hallWin', icon: '🏆', label: 'HALL OF FAME', title: 'HALL_OF_FAME.EXE — Top Players', w: 660, h: 620, component: HallOfFame, desktop: true, menu: true },
   { id: 'recycleWin', icon: '🗑', label: 'RECYCLE', title: 'RECYCLE BIN', w: 380, h: 360, component: Recycle, desktop: true, menu: false },
   { id: 'resumeWin', icon: '📄', label: 'RESUME', title: 'RESUME_VIEWER.EXE — Shreenidhi_M_Resume.pdf', w: 640, h: 560, component: ResumeViewer, desktop: true, menu: false },
+  { id: 'webWin', icon: '🌐', label: 'SITE VIEWER', title: 'WEB_VIEW.EXE — External Page', w: 680, h: 540, component: WebView, desktop: false, menu: false },
+  ...Array.from({ length: 9 }, (_, i) => ({
+    id: 'webWin-' + (i + 1),
+    icon: '🌐',
+    label: 'SITE VIEWER',
+    title: 'WEB_VIEW.EXE — External Page',
+    w: 680,
+    h: 540,
+    component: WebView,
+    desktop: false,
+    menu: false,
+  })),
 ]
 
 export const appById = Object.fromEntries(APPS.map((a) => [a.id, a])) as Record<string, AppMeta>
