@@ -36,7 +36,7 @@ export function Taskbar() {
       <div className="tb-sep" />
       <div className="tb-apps">
         {openWins.map((w) => {
-          const meta = appById[w.id]
+          const meta = appById[w.id] || appById[w.id.replace(/-\d+$/, '')]
           if (!meta) return null
           return (
             <button

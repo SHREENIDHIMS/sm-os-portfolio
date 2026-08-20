@@ -44,10 +44,14 @@ interface OSState extends PersistedSettings {
   notifSeq: number
   shutdown: boolean
   screensaver: boolean
+  webUrl: string
+  webUrls: Record<string, string>
 
   setPhase: (p: Phase) => void
   shutdownOS: () => void
   openWin: (id: string, w: number, h: number) => void
+  openWebUrl: (url: string) => void
+  navigateWeb: (id: string, url: string) => void
   closeWin: (id: string) => void
   minimizeWin: (id: string) => void
   toggleMaximize: (id: string) => void
@@ -103,9 +107,16 @@ export const useOS = create<OSState>()(
       notifSeq: 0,
       shutdown: false,
       screensaver: false,
+      webUrl: '',
+      webUrls: {},
 
       setPhase: (p) => set({ phase: p }),
       shutdownOS: () => {
+        try {
+          window.sessionStorage.removeItem('sm-os-booted')
+        } catch {
+          /* storage unavailable */
+        }
         set({ shutdown: true, phase: 'boot', startOpen: false })
         setTimeout(() => useOS.getState().closeAll(), 200)
       },
@@ -154,6 +165,16 @@ export const useOS = create<OSState>()(
           }
         })
       },
+
+      openWebUrl: (url) => {
+        const ids = Array.from({ length: 10 }, (_, i) => (i === 0 ? 'webWin' : 'webWin-' + i))
+        const id = ids.find((k) => !get().windows[k]?.open) || 'webWin'
+        set((s) => ({ webUrls: { ...s.webUrls, [id]: url } }))
+        get().openWin(id, 680, 540)
+      },
+
+      navigateWeb: (id, url) =>
+        set((s) => ({ webUrls: { ...s.webUrls, [id]: url } })),
 
       closeWin: (id) =>
         set((s) => ({
