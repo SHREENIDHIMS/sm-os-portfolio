@@ -44,6 +44,7 @@ interface OSState extends PersistedSettings {
   notifSeq: number
   shutdown: boolean
   screensaver: boolean
+  assistantOpen: boolean
   webUrl: string
   webUrls: Record<string, string>
 
@@ -69,6 +70,7 @@ interface OSState extends PersistedSettings {
   dismissNotif: (id: number) => void
   setClippy: (v: boolean) => void
   setScreensaver: (v: boolean) => void
+  setAssistant: (v: boolean) => void
 }
 
 const TASKBAR_H = 40
@@ -107,6 +109,7 @@ export const useOS = create<OSState>()(
       notifSeq: 0,
       shutdown: false,
       screensaver: false,
+      assistantOpen: false,
       webUrl: '',
       webUrls: {},
 
@@ -283,6 +286,7 @@ export const useOS = create<OSState>()(
       dismissNotif: (id) => set((s) => ({ notifs: s.notifs.filter((n) => n.id !== id) })),
       setClippy: (v) => set({ clippyVisible: v }),
       setScreensaver: (v) => set({ screensaver: v }),
+      setAssistant: (v) => set({ assistantOpen: v }),
     }),
     {
       name: 'sm-os-settings',
