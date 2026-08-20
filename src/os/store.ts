@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
 export type ThemeName = 'blue' | 'amber' | 'red' | 'green' | 'purple'
 export type Phase = 'boot' | 'welcome' | 'desktop'
@@ -262,7 +262,7 @@ export const useOS = create<OSState>()(
     {
       name: 'sm-os-settings',
       partialize: (s) => ({ theme: s.theme, wallpaper: s.wallpaper, muted: s.muted, scanlines: s.scanlines }),
-      storage: {
+      storage: createJSONStorage(() => ({
         getItem: (n) => (typeof window !== 'undefined' ? window.localStorage.getItem(n) : null),
         setItem: (n, v) => {
           if (typeof window !== 'undefined') window.localStorage.setItem(n, v)
@@ -270,7 +270,7 @@ export const useOS = create<OSState>()(
         removeItem: (n) => {
           if (typeof window !== 'undefined') window.localStorage.removeItem(n)
         },
-      },
+      })),
     },
   ),
 )
