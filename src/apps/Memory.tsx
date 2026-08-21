@@ -119,10 +119,12 @@ export default function Memory() {
         {moves === 0 && !finished && (
           <div style={{ marginBottom: 8 }}>
             <ScoreTable game={board} limit={3} title="TOP PLAYERS" />
-            <div style={{ marginTop: 6 }}>
-              <NameField onChange={() => setNameErr(false)} />
-              {nameErr && <div className="arcade-err">⚠ TYPE YOUR NAME TO PLAY</div>}
-            </div>
+            {!getPlayerName().trim() && (
+              <div style={{ marginTop: 6 }}>
+                <NameField onChange={() => setNameErr(false)} />
+                {nameErr && <div className="arcade-err">⚠ TYPE YOUR NAME TO PLAY</div>}
+              </div>
+            )}
           </div>
         )}
         <div style={{ textAlign: 'center', marginBottom: 6 }}>
@@ -149,7 +151,7 @@ export default function Memory() {
           <span>MOVES: <span style={{ color: '#fff' }}>{moves}</span></span>
           <span>LEFT: <span style={{ color: '#fff' }}>{d.pairs - matched}</span></span>
         </div>
-        <div className="mem-grid">
+        <div className="mem-grid" style={{ gridTemplateColumns: 'repeat(' + (cards.length > 16 ? 5 : 4) + ',1fr)' }}>
           {cards.map((c) => (
             <button
               key={c.i}

@@ -174,10 +174,12 @@ export default function Minesweeper() {
         {!started && (
           <div style={{ marginBottom: 8 }}>
             <ScoreTable game={board} limit={3} title="BEST TIMES" />
-            <div style={{ marginTop: 6 }}>
-              <NameField onChange={() => setNameErr(false)} />
-              {nameErr && <div className="arcade-err">⚠ TYPE YOUR NAME TO PLAY</div>}
-            </div>
+            {!getPlayerName().trim() && (
+              <div style={{ marginTop: 6 }}>
+                <NameField onChange={() => setNameErr(false)} />
+                {nameErr && <div className="arcade-err">⚠ TYPE YOUR NAME TO PLAY</div>}
+              </div>
+            )}
           </div>
         )}
         <div style={{ textAlign: 'center', marginBottom: 6 }}>
@@ -224,6 +226,13 @@ export default function Minesweeper() {
             )),
           )}
         </div>
+        {lost && (
+          <div style={{ textAlign: 'center', marginTop: 12 }}>
+            <div style={{ fontFamily: 'var(--font-vt)', fontSize: 20, color: '#ff5555' }}>💥 BOOM! GAME OVER</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa', margin: '4px 0 8px' }}>You hit a mine — all mines revealed.</div>
+            <button className="retro-btn" style={{ fontSize: 15, padding: '2px 12px' }} onClick={reset}>[ RETRY ]</button>
+          </div>
+        )}
         {won && (
           <div style={{ textAlign: 'center', marginTop: 12 }}>
             <div style={{ fontFamily: 'var(--font-vt)', fontSize: 20, color: '#00ff00' }}>🏆 CLEARED!</div>

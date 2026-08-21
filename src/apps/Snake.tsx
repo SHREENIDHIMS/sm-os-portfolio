@@ -48,6 +48,7 @@ export default function Snake() {
   const [, force] = useState(0)
   const [diff, setDiff] = useState<'easy' | 'normal' | 'hard'>('normal')
   const [nameErr, setNameErr] = useState(false)
+  const [cellPx, setCellPx] = useState(16)
   const timer = useRef<number | null>(null)
   const boardRef = useRef<HTMLDivElement>(null)
   const render = () => force((n) => n + 1)
@@ -63,13 +64,18 @@ export default function Snake() {
   const sizeBoard = () => {
     const board = boardRef.current
     if (!board) return
-    const parent = board.parentElement
-    if (!parent) return
-    const sz = Math.min(parent.clientWidth - 20, window.innerHeight * 0.45, 360)
-    if (sz <= 0) return
+    const frame = board.parentElement
+    if (!frame) return
+    const host = frame.parentElement
+    if (!host) return
+    const avail = Math.min(host.clientWidth - 34, window.innerHeight * 0.45, 360)
+    if (avail <= 0) return
+    const cell = Math.max(8, Math.floor(avail / SZ))
+    const sz = cell * SZ
     board.style.width = sz + 'px'
     board.style.height = sz + 'px'
-    board.style.backgroundSize = sz / SZ + 'px ' + sz / SZ + 'px'
+    board.style.backgroundSize = cell + 'px ' + cell + 'px'
+    setCellPx(cell)
   }
 
   useEffect(() => {
@@ -167,7 +173,6 @@ export default function Snake() {
 
   const onSwipe = (dir: string) => setDir(dir)
 
-  const cellPx = boardRef.current ? Math.max(8, Math.floor(boardRef.current.clientWidth / SZ)) : 16
   const game = g.current
 
   return (
@@ -189,10 +194,12 @@ export default function Snake() {
                 </button>
               ))}
             </div>
-            <div style={{ marginTop: 8 }}>
-              <NameField onChange={() => setNameErr(false)} />
-              {nameErr && <div className="arcade-err">⚠ TYPE YOUR NAME TO PLAY</div>}
-            </div>
+            {(getPlayerName().trim() ? null : (
+              <div style={{ marginTop: 8 }}>
+                <NameField onChange={() => setNameErr(false)} />
+                {nameErr && <div className="arcade-err">⚠ TYPE YOUR NAME TO PLAY</div>}
+              </div>
+            ))}
             <button className="retro-btn" onClick={() => start(diff)}>[ START GAME ]</button>
             <div style={{ marginTop: 12 }}>
               <ScoreTable game="snake" limit={3} title="TOP PLAYERS" />
@@ -204,39 +211,53 @@ export default function Snake() {
               <span>SCORE: <span style={{ color: '#fff' }}>{game.score}</span></span>
               <span>HI: <span style={{ color: '#fff' }}>{game.hi}</span></span>
             </div>
-            <div
-              className="snake-board"
-              ref={boardRef}
-              style={{ backgroundImage: 'linear-gradient(rgba(0,0,100,0.15) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,100,0.15) 1px,transparent 1px)' }}
-              onPointerDown={(e) => {
-                const el = boardRef.current
-                if (!el) return
-                const r = el.getBoundingClientRect()
-                const dx = e.clientX - (r.left + r.width / 2)
-                const dy = e.clientY - (r.top + r.height / 2)
-                if (Math.abs(dx) > Math.abs(dy)) onSwipe(dx > 0 ? 'RIGHT' : 'LEFT')
-                else onSwipe(dy > 0 ? 'DOWN' : 'UP')
-              }}
-            >
-              {game.snake.map((p, i) => (
-                <div
-                  key={i}
-                  className={'snake-cell ' + (i === 0 ? 'snake-head' : 'snake-body')}
-                  style={{ left: p.x * cellPx, top: p.y * cellPx, width: cellPx, height: cellPx }}
-                />
-              ))}
-              <div className="snake-cell snake-food" style={{ left: game.food.x * cellPx, top: game.food.y * cellPx, width: cellPx, height: cellPx }} />
-              <div className={'snake-overlay' + (game.over ? ' vis' : '')}>
-                <>
-                  <div>GAME OVER</div>
-                  <div style={{ color: '#ffcc00', fontSize: 18, marginTop: 5 }}>Score: {game.score}</div>
-                  {game.saved && (
-                    <div style={{ marginTop: 8 }}>
-                      <ScoreTable game="snake" limit={3} title="TOP PLAYERS" />
+            <div className="snake-frame">
+              <div
+                className="snake-board"
+                ref={boardRef}
+                style={{ backgroundImage: 'linear-gradient(rgba(0,0,100,0.15) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,100,0.15) 1px,transparent 1px)' }}
+                onPointerDown={(e) => {
+                  const el = boardRef.current
+                  if (!el) return
+                  const r = el.getBoundingClientRect()
+                  const dx = e.clientX - (r.left + r.width / 2)
+                  const dy = e.clientY - (r.top + r.height / 2)
+                  if (Math.abs(dx) > Math.abs(dy)) onSwipe(dx > 0 ? 'RIGHT' : 'LEFT')
+                  else onSwipe(dy > 0 ? 'DOWN' : 'UP')
+                }}
+              >
+                {game.snake.map((p, i) => (
+                  <div
+                    key={i}
+                    className={'snake-cell ' + (i === 0 ? 'snake-head' : 'snake-body')}
+                    style={{ left: p.x * cellPx, top: p.y * cellPx, width: cellPx, height: cellPx }}
+                  />
+                ))}
+                <div className="snake-cell snake-food" style={{ left: game.food.x * cellPx, top: game.food.y * cellPx, width: cellPx, height: cellPx }} />
+                <div className={'snake-overlay' + (game.over ? ' vis' : '')}>
+                  <>
+                    <div>GAME OVER</div>
+                    <div style={{ color: '#ffcc00', fontSize: 18, marginTop: 5 }}>Score: {game.score}</div>
+                    {game.saved && (
+                      <div style={{ marginTop: 8 }}>
+                        <ScoreTable game="snake" limit={3} title="TOP PLAYERS" />
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                      <button className="retro-btn" onClick={() => start(game.diff)}>[ RETRY ]</button>
+                      <button
+                        className="retro-btn"
+                        onClick={() => {
+                          if (timer.current) clearInterval(timer.current)
+                          g.current.started = false
+                          g.current.running = false
+                          g.current.over = false
+                          render()
+                        }}
+                      >[ MENU ]</button>
                     </div>
-                  )}
-                  <button className="retro-btn" onClick={() => start(game.diff)}>[ RETRY ]</button>
-                </>
+                  </>
+                </div>
               </div>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa' }}>{game.diff.toUpperCase()} MODE · Walls wrap · Avoid your tail</div>
