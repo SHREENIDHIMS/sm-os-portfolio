@@ -411,7 +411,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .arcade-modal-box{background:#000040;border:3px outset #c0c0c0;padding:24px 32px;text-align:center;box-shadow:8px 8px 0 rgba(0,0,0,.5);}
 .arcade-input{font-family:var(--font-vt);font-size:22px;letter-spacing:3px;text-transform:uppercase;text-align:center;background:#000020;color:#00ff00;border:2px solid #00ff00;padding:6px 10px;margin-top:10px;width:220px;outline:none;caret-color:#ffcc00;}
 .arcade-input::placeholder{color:#335533;}
-.arcade-namefield{margin:0 auto;}
+.arcade-namefield{margin:0 auto;text-align:center;}
 .arcade-input-sm{width:190px;font-size:17px;padding:4px 8px;margin-top:4px;letter-spacing:2px;}
 .arcade-err{color:#ff6666;font-family:var(--font-mono);font-size:10px;margin-top:4px;text-align:center;}
 .arcade-hud{display:flex;justify-content:space-between;font-family:var(--font-vt);font-size:16px;color:#ffd84d;background:rgba(0,0,30,0.55);border:1px solid #333388;padding:4px 12px;margin-top:8px;}

@@ -15,6 +15,8 @@ const desktopIcons = APPS.filter((a) => a.desktop)
 
 const ICON_W = 78
 const ICON_H = 92
+const GRID_X0 = 8
+const GRID_Y0 = 36
 
 function defaultPos(i: number): { x: number; y: number } {
   const vh = window.innerHeight - TASKBAR_H - 44
@@ -24,6 +26,55 @@ function defaultPos(i: number): { x: number; y: number } {
     x: Math.max(8, window.innerWidth - 92 - col * ICON_W),
     y: 36 + (i % perCol) * ICON_H,
   }
+}
+
+function cellOf(x: number, y: number): { col: number; row: number } {
+  return {
+    col: Math.round((x - GRID_X0) / ICON_W),
+    row: Math.round((y - GRID_Y0) / ICON_H),
+  }
+}
+
+function posOf(col: number, row: number): { x: number; y: number } {
+  return { x: GRID_X0 + col * ICON_W, y: GRID_Y0 + row * ICON_H }
+}
+
+function gridBounds(): { maxCol: number; maxRow: number } {
+  return {
+    maxCol: Math.max(0, Math.floor((window.innerWidth - ICON_W - 4 - GRID_X0) / ICON_W)),
+    maxRow: Math.max(0, Math.floor((window.innerHeight - TASKBAR_H - ICON_H - GRID_Y0) / ICON_H)),
+  }
+}
+
+function resolveFreeCell(id: string, x: number, y: number): { x: number; y: number } {
+  const st = useOS.getState()
+  const occupied = new Set<string>()
+  Object.entries(st.iconPos).forEach(([oid, op]) => {
+    if (oid === id) return
+    const c = cellOf(op.x, op.y)
+    occupied.add(c.col + ',' + c.row)
+  })
+  const { maxCol, maxRow } = gridBounds()
+  const raw = cellOf(x, y)
+  const start: { col: number; row: number } = {
+    col: Math.max(0, Math.min(maxCol, raw.col)),
+    row: Math.max(0, Math.min(maxRow, raw.row)),
+  }
+  const key = (c: { col: number; row: number }) => c.col + ',' + c.row
+  if (!occupied.has(key(start))) return posOf(start.col, start.row)
+  let best: { col: number; row: number } | null = null
+  let bestD = Infinity
+  for (let col = 0; col <= maxCol; col++) {
+    for (let row = 0; row <= maxRow; row++) {
+      if (occupied.has(col + ',' + row)) continue
+      const d = Math.hypot(col - start.col, row - start.row)
+      if (d < bestD) {
+        bestD = d
+        best = { col, row }
+      }
+    }
+  }
+  return best ? posOf(best.col, best.row) : posOf(start.col, start.row)
 }
 
 export function Desktop() {
@@ -70,9 +121,8 @@ export function Desktop() {
       document.removeEventListener('pointerup', onUp)
       document.removeEventListener('pointercancel', onCancel)
       if (moved) {
-        const gx = Math.max(8, Math.min(window.innerWidth - ICON_W - 4, 8 + Math.round((cx - 8) / ICON_W) * ICON_W))
-        const gy = Math.max(36, Math.min(window.innerHeight - TASKBAR_H - ICON_H, 36 + Math.round((cy - 36) / ICON_H) * ICON_H))
-        useOS.getState().setIconPos(id, gx, gy)
+        const free = resolveFreeCell(id, cx, cy)
+        useOS.getState().setIconPos(id, free.x, free.y)
       }
       setTimeout(() => { justDragged.current = false }, 50)
     }
