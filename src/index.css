@@ -33,7 +33,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 #welcomeScreen.visible{display:flex;}
 #welcomeScreen.fade{opacity:0;pointer-events:none;transition:opacity 0.5s;}
 #welcomeScreen.gone{display:none;}
-.welcome-card{width:min(480px,92vw);border:2px solid var(--white);background:var(--surface);padding:clamp(20px,4vw,40px);box-shadow:8px 8px 0 rgba(0,0,0,0.5);text-align:center;}
+.welcome-card{position:relative;z-index:1;width:min(480px,92vw);border:2px solid var(--white);background:var(--surface);padding:clamp(20px,4vw,40px);box-shadow:8px 8px 0 rgba(0,0,0,0.5);text-align:center;}
 .welcome-logo{font-family:var(--font-vt);font-size:clamp(36px,10vw,70px);color:#44c55c;letter-spacing:2px;line-height:0.95;text-shadow:2px 2px 0 #003300,0 0 10px rgba(68,255,102,0.4);}
 .welcome-sub{font-family:var(--font-vt);font-size:22px;color:var(--white);margin:14px 0 4px;letter-spacing:2px;}
 .welcome-desc{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin-bottom:28px;line-height:1.6;}
@@ -45,7 +45,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 /* ===== DESKTOP ===== */
 #desktop{position:fixed;inset:0 0 var(--taskbar-h) 0;display:none;overflow:hidden;}
 #desktop.visible{display:block;}
-#wpCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+#wpCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
 #desktopOverlay{position:absolute;inset:0;z-index:1;pointer-events:none;}
 #desktopIcons{position:absolute;inset:0;z-index:5;pointer-events:none;}
 .status-bar-top{position:absolute;top:6px;left:6px;z-index:5;display:flex;gap:10px;align-items:center;font-family:var(--font-mono);font-size:10px;}
