@@ -1,5 +1,5 @@
 import { useOS } from '../os/store'
-import { appById } from '../os/registry'
+import { appById, openApp } from '../os/registry'
 import { useClock } from '../hooks/useClock'
 import { clickSnd } from '../os/sound'
 
@@ -19,10 +19,8 @@ export function Taskbar() {
   const onTaskClick = (id: string, minimized: boolean, focused: boolean) => {
     clickSnd()
     const os = useOS.getState()
-    const meta = appById[id]
     if (minimized) {
-      os.minimizeWin(id)
-      if (meta) os.openWin(id, meta.w, meta.h)
+      os.focusWin(id)
     } else if (focused) {
       os.minimizeWin(id)
     } else {
@@ -50,11 +48,11 @@ export function Taskbar() {
         })}
       </div>
       <div className="tb-tray">
-        <span className="tb-tray-icon" onClick={() => { clickSnd(); useOS.getState().setAssistant(!useOS.getState().assistantOpen) }} title="SM-Assistant">🤖</span>
-        <span className="tb-tray-icon" onClick={() => { clickSnd(); toggleMuted() }} title="Sound">
+        <span className="tb-tray-icon" role="button" tabIndex={0} aria-label="Toggle SM-Assistant" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); useOS.getState().setAssistant(!useOS.getState().assistantOpen) } }} onClick={() => { clickSnd(); useOS.getState().setAssistant(!useOS.getState().assistantOpen) }} title="SM-Assistant">🤖</span>
+        <span className="tb-tray-icon" role="button" tabIndex={0} aria-label={muted ? 'Unmute sounds' : 'Mute sounds'} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMuted() } }} onClick={() => { clickSnd(); toggleMuted() }} title="Sound">
           {muted ? '🔇' : '🔊'}
         </span>
-        <span className="tb-tray-icon" onClick={() => { clickSnd(); useOS.getState().openWin('clockWin', 330, 440) }} title="Clock">🕐</span>
+        <span className="tb-tray-icon" role="button" tabIndex={0} aria-label="Open clock" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openApp('clockWin') } }} onClick={() => { clickSnd(); openApp('clockWin') }} title="Clock">🕐</span>
         <span className="tb-clock">{time12}</span>
       </div>
     </div>

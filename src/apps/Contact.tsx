@@ -23,8 +23,8 @@ export default function Contact() {
         </ul>
         <div style={{ marginTop: 12, padding: 10, background: 'var(--panel)', border: '1px solid #00aa00' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#6688aa', marginBottom: 4 }}>// availability</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00ff00' }}>âœ“ Open to entry-level software roles</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00ffff', marginTop: 3 }}>â†’ Backend / full-stack development</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00ff00' }}>✓ Open to entry-level software roles</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00ffff', marginTop: 3 }}>→ Backend / full-stack development</div>
         </div>
       </WinBody>
       <WinStatusbar>

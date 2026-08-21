@@ -23,10 +23,12 @@ interface MemCard {
 }
 
 function makeCards(pairs: number): MemCard[] {
-  return SYMBOL_POOL.slice(0, pairs)
-    .concat(SYMBOL_POOL.slice(0, pairs))
-    .sort(() => Math.random() - 0.5)
-    .map((v, i) => ({ v, i, fl: false, ma: false }))
+  const deck = SYMBOL_POOL.slice(0, pairs).concat(SYMBOL_POOL.slice(0, pairs))
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[deck[i], deck[j]] = [deck[j], deck[i]]
+  }
+  return deck.map((v, i) => ({ v, i, fl: false, ma: false }))
 }
 
 export default function Memory() {

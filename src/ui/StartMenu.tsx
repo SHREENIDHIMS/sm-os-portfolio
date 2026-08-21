@@ -17,7 +17,7 @@ export function StartMenu() {
   const resume = () => {
     clickSnd()
     setStartOpen(false)
-    useOS.getState().openWin('resumeWin', 640, 560)
+    openApp('resumeWin')
   }
 
   const games = menuApps.filter((a) => ['snakeWin', 'memoryWin', 'mineWin', 'hallWin'].includes(a.id))

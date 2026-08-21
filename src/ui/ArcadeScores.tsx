@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getScores, submitScore, formatScore, getPlayerName, setPlayerName } from '../os/leaderboard'
+import { getScores, formatScore, getPlayerName, setPlayerName } from '../os/leaderboard'
 import type { GameId, ScoreEntry } from '../os/leaderboard'
 
 export function ScoreTable({ game, limit = 5, title = 'TOP PLAYERS' }: { game: GameId; limit?: number; title?: string }) {

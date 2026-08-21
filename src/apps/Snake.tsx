@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { WinBody, WinStatusbar, StatusPanel } from '../ui/Window'
 import { clickSnd, beep } from '../os/sound'
-import { submitScore, getPlayerName } from '../os/leaderboard'
+import { submitScore, getPlayerName, getScores } from '../os/leaderboard'
 import { ScoreTable, NameField } from '../ui/ArcadeScores'
 
 const SZ = 20
@@ -34,7 +34,7 @@ const fresh = (): Game => ({
   dir: 'RIGHT',
   nextDir: 'RIGHT',
   score: 0,
-  hi: 0,
+  hi: getScores('snake')[0]?.score ?? 0,
   running: false,
   over: false,
   started: false,
@@ -93,7 +93,6 @@ export default function Snake() {
       sizeBoard()
       render()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started])
 
   const start = (d: string = 'normal') => {

@@ -12,7 +12,7 @@ export default function Career() {
             <div className="exp-company" style={{ color: e.companyColor }}>{e.company}</div>
             <div className="exp-role">{e.role}</div>
             <div className="exp-period">{e.period}</div>
-            <div className="exp-desc" dangerouslySetInnerHTML={{ __html: e.desc }} />
+            <div className="exp-desc" style={{ whiteSpace: 'pre-line' }}>{e.desc.replace(/<br\s*\/?>/gi, '\n')}</div>
           </div>
         ))}
 

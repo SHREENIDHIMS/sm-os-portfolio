@@ -18,12 +18,12 @@ export function ContextMenu() {
 
   return (
     <div className={'ctx-menu' + (ctxOpen ? ' open' : '')} style={{ left: ctxPos.x, top: ctxPos.y }}>
-      <div className="ctx-item" onClick={() => doAction('refresh')}>🔄 Refresh Desktop</div>
+      <button className="ctx-item" onClick={() => doAction('refresh')}>🔄 Refresh Desktop</button>
       <div className="ctx-sep" />
-      <div className="ctx-item" onClick={() => doAction('display')}>🖥 Display Properties</div>
-      <div className="ctx-item" onClick={() => doAction('terminal')}>▶ Open Terminal</div>
+      <button className="ctx-item" onClick={() => doAction('display')}>🖥 Display Properties</button>
+      <button className="ctx-item" onClick={() => doAction('terminal')}>▶ Open Terminal</button>
       <div className="ctx-sep" />
-      <div className="ctx-item" onClick={() => doAction('about')}>ℹ About SM-OS</div>
+      <button className="ctx-item" onClick={() => doAction('about')}>ℹ About SM-OS</button>
     </div>
   )
 }
