@@ -353,7 +353,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 /* CONTEXT MENU */
 .ctx-menu{position:fixed;background:var(--surface);border:2px outset #c0c0ff;box-shadow:4px 4px 10px rgba(0,0,0,0.7);z-index:9200;display:none;min-width:170px;}
 .ctx-menu.open{display:block;}
-.ctx-item{padding:5px 16px;font-family:var(--font-vt);font-size:17px;color:#fff;cursor:pointer;transition:background 0.08s;}
+.ctx-item{padding:5px 16px;font-family:var(--font-vt);font-size:17px;color:#fff;cursor:pointer;transition:background 0.08s;background:none;border:none;width:100%;text-align:left;display:block;}
 .ctx-item:hover{background:rgba(0,0,200,0.5);}
 .ctx-sep{height:1px;background:rgba(255,255,255,0.2);margin:2px 8px;}
 

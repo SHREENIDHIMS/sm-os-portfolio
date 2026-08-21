@@ -2,16 +2,8 @@ import { useEffect, useRef } from 'react'
 import { WinBody, WinStatusbar, StatusPanel } from '../ui/Window'
 import { useOS } from '../os/store'
 import { wps } from '../os/wallpapers'
+import { THEME_LIST } from '../os/themes'
 import { clickSnd, openSnd } from '../os/sound'
-import type { ThemeName } from '../os/store'
-
-const themeDefs: { id: ThemeName; label: string; bg: string; fg: string }[] = [
-  { id: 'blue', label: 'Blue', bg: 'linear-gradient(180deg,#0000b0,#000060)', fg: '#00ff00' },
-  { id: 'amber', label: 'Amber', bg: 'linear-gradient(180deg,#402000,#201000)', fg: '#ffcc00' },
-  { id: 'red', label: 'Red', bg: 'linear-gradient(180deg,#400010,#200008)', fg: '#ff4444' },
-  { id: 'green', label: 'Green', bg: 'linear-gradient(180deg,#003020,#001510)', fg: '#00ff88' },
-  { id: 'purple', label: 'Purple', bg: 'linear-gradient(180deg,#200040,#100020)', fg: '#cc88ff' },
-]
 
 function WpThumb({ idx }: { idx: number }) {
   const ref = useRef<HTMLCanvasElement>(null)
@@ -56,18 +48,18 @@ export default function Display() {
         <div className="disp-section">
           <span className="disp-label">OS Theme Color</span>
           <div className="theme-row">
-            {themeDefs.map((t) => (
+            {THEME_LIST.map((t) => (
               <div
                 key={t.id}
                 className={'theme-sw' + (theme === t.id ? ' on' : '')}
-                style={{ background: t.bg }}
+                style={{ background: t.swatch }}
                 onClick={() => {
                   clickSnd()
                   setTheme(t.id)
                   notify('DISPLAY.CPL', 'Theme: ' + t.label.toUpperCase())
                 }}
               >
-                <span style={{ color: t.fg }}>{t.label}</span>
+                <span style={{ color: t.acc }}>{t.label}</span>
               </div>
             ))}
           </div>

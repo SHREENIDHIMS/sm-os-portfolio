@@ -70,7 +70,7 @@ export default function CodePlayground() {
       </WinBody>
       <WinStatusbar>
         <StatusPanel>JavaScript</StatusPanel>
-        <StatusPanel>Sandboxed</StatusPanel>
+        <StatusPanel>Runs locally</StatusPanel>
       </WinStatusbar>
     </>
   )

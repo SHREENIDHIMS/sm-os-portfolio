@@ -4,6 +4,7 @@ import { fileStructure } from '../data/files'
 import type { ProjectDetail } from '../data/files'
 import { clickSnd } from '../os/sound'
 import { useOS } from '../os/store'
+import { openApp } from '../os/registry'
 
 const sideNav = [
   { id: 'home', icon: '🏠', label: 'Home' },
@@ -54,7 +55,7 @@ export default function Files() {
     if (item.type === 'folder') nav(item.target as string)
     else if (item.type === 'win') useOS.getState().openWin(item.target as string, 460, 440)
     else if (item.type === 'project') setDetail(item.target as ProjectDetail)
-    else if (item.type === 'resume') useOS.getState().openWin('resumeWin', 640, 560)
+    else if (item.type === 'resume') openApp('resumeWin')
   }
 
   return (

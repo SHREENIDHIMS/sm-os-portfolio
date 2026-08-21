@@ -25,14 +25,16 @@ export default function MusicPlayer() {
   const [bars, setBars] = useState<number[]>(Array(24).fill(5))
 
   useEffect(() => {
+    if (!playing) {
+      barsRef.current = barsRef.current.map(() => 5)
+      setBars([...barsRef.current])
+      return
+    }
     let raf = 0
     let frame = 0
     const tick = () => {
       if (frame++ % 2 === 0) {
-        barsRef.current = barsRef.current.map((v) => {
-          const target = playing ? 12 + Math.random() * 88 : 5
-          return v + (target - v) * 0.22
-        })
+        barsRef.current = barsRef.current.map((v) => v + (12 + Math.random() * 88 - v) * 0.22)
         setBars([...barsRef.current])
       }
       raf = requestAnimationFrame(tick)

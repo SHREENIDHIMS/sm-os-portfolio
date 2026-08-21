@@ -52,11 +52,8 @@ interface OSState extends PersistedSettings {
   shutdown: boolean
   screensaver: boolean
   assistantOpen: boolean
-  webUrl: string
   webUrls: Record<string, string>
   iconPos: Record<string, IconPos>
-  wpSpeed: number
-  wpDim: number
 
   setPhase: (p: Phase) => void
   shutdownOS: () => void
@@ -86,9 +83,9 @@ interface OSState extends PersistedSettings {
   setAssistant: (v: boolean) => void
 }
 
-const TASKBAR_H = 40
+export const TASKBAR_H = 40
 
-function defaultWin(id: string, w: number, h: number): WinState {
+function defaultWin(_id: string, w: number, h: number): WinState {
   return {
     open: false,
     minimized: false,
@@ -123,7 +120,6 @@ export const useOS = create<OSState>()(
       shutdown: false,
       screensaver: false,
       assistantOpen: false,
-      webUrl: '',
       webUrls: {},
       iconPos: {},
       wpSpeed: 1,
@@ -156,31 +152,30 @@ export const useOS = create<OSState>()(
           if (vw < 700) maximized = true
         }
 
-        set((s) => ({
-          zTop: s.zTop + 1,
-          windows: {
-            ...s.windows,
-            [id]: {
-              ...cur,
-              open: true,
-              minimized: false,
-              focused: true,
-              x,
-              y,
-              w,
-              h,
-              z: s.zTop + 1,
-              placed: true,
-              maximized,
+        set((s) => {
+          const windows: Record<string, WinState> = { ...s.windows }
+          Object.keys(windows).forEach((k) => {
+            if (k !== id && windows[k]?.focused) windows[k] = { ...windows[k], focused: false }
+          })
+          return {
+            zTop: s.zTop + 1,
+            windows: {
+              ...windows,
+              [id]: {
+                ...cur,
+                open: true,
+                minimized: false,
+                focused: true,
+                x,
+                y,
+                w,
+                h,
+                z: s.zTop + 1,
+                placed: true,
+                maximized,
+              },
             },
-          },
-          startOpen: false,
-        }))
-        Object.keys(get().windows).forEach((k) => {
-          if (k !== id && get().windows[k]?.focused) {
-            set((s) => ({
-              windows: { ...s.windows, [k]: { ...s.windows[k], focused: false } },
-            }))
+            startOpen: false,
           }
         })
       },

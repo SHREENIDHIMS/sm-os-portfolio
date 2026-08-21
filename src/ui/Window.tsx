@@ -1,7 +1,7 @@
 import { Suspense, type CSSProperties, type ReactNode } from 'react'
 import { useOS } from '../os/store'
 import type { AppMeta } from '../os/registry'
-import { clickSnd, closeSnd, openSnd } from '../os/sound'
+import { clickSnd, closeSnd } from '../os/sound'
 
 interface Props {
   meta: AppMeta
@@ -43,14 +43,21 @@ export function Window({ meta }: Props) {
     function onUp(ev: PointerEvent) {
       document.removeEventListener('pointermove', onMove)
       document.removeEventListener('pointerup', onUp)
+      document.removeEventListener('pointercancel', onCancel)
       const vw = window.innerWidth
       const os = useOS.getState()
       if (ev.clientX <= 12) os.snapWin(meta.id, 'left')
       else if (ev.clientX >= vw - 12) os.snapWin(meta.id, 'right')
       else if (ev.clientY <= 12) os.snapWin(meta.id, 'max')
     }
+    function onCancel() {
+      document.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerup', onUp)
+      document.removeEventListener('pointercancel', onCancel)
+    }
     document.addEventListener('pointermove', onMove)
     document.addEventListener('pointerup', onUp)
+    document.addEventListener('pointercancel', onCancel)
   }
 
   if (!win || !win.open) return null
@@ -69,9 +76,9 @@ export function Window({ meta }: Props) {
         <span className="win-icon-sm">{meta.icon}</span>
         <div className="win-title">{meta.title}</div>
         <div className="win-controls">
-          <button className="win-btn" onClick={minimize}>_</button>
-          <button className="win-btn" onClick={maximize}>□</button>
-          <button className="win-btn cls" onClick={close}>✕</button>
+          <button className="win-btn" onClick={minimize} aria-label="Minimize window">_</button>
+          <button className="win-btn" onClick={maximize} aria-label="Maximize window">□</button>
+          <button className="win-btn cls" onClick={close} aria-label="Close window">✕</button>
         </div>
       </div>
       <Suspense
@@ -101,7 +108,14 @@ export function WinMenubar({ children }: { children: ReactNode }) {
 
 export function MenuItem({ onClick, children, style }: { onClick?: () => void; children: ReactNode; style?: CSSProperties }) {
   return (
-    <span className="win-menu-item" onClick={onClick} style={style}>
+    <span
+      className="win-menu-item"
+      onClick={onClick}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } } : undefined}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      style={style}
+    >
       {children}
     </span>
   )
@@ -134,5 +148,3 @@ export function promptLine(cmd: string) {
     </div>
   )
 }
-
-export { openSnd }

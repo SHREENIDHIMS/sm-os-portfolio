@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useOS } from '../os/store'
+import { openApp } from '../os/registry'
 import { clickSnd } from '../os/sound'
 
 interface Msg { who: 'bot' | 'me'; text: string }
@@ -30,7 +31,7 @@ function answer(raw: string): { text: string; action?: () => void } {
   if (q.includes('resume') || q.includes('cv')) {
     return {
       text: '📄 Opening RESUME_VIEWER.EXE for you…',
-      action: () => useOS.getState().openWin('resumeWin', 640, 560),
+      action: () => openApp('resumeWin'),
     }
   }
   if (q.includes('game') || q.includes('play') || q.includes('snake') || q.includes('fun')) {

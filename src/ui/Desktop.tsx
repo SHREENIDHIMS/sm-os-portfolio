@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { APPS } from '../os/registry'
-import { useOS } from '../os/store'
+import { useOS, TASKBAR_H } from '../os/store'
 import { openSnd } from '../os/sound'
 import { Wallpaper } from './Wallpaper'
 import { Window } from './Window'
@@ -15,7 +15,6 @@ const desktopIcons = APPS.filter((a) => a.desktop)
 
 const ICON_W = 78
 const ICON_H = 92
-const TASKBAR_H = 40
 
 function defaultPos(i: number): { x: number; y: number } {
   const vh = window.innerHeight - TASKBAR_H - 44
@@ -69,6 +68,7 @@ export function Desktop() {
     const onUp = () => {
       document.removeEventListener('pointermove', onMove)
       document.removeEventListener('pointerup', onUp)
+      document.removeEventListener('pointercancel', onCancel)
       if (moved) {
         const gx = Math.max(8, Math.min(window.innerWidth - ICON_W - 4, 8 + Math.round((cx - 8) / ICON_W) * ICON_W))
         const gy = Math.max(36, Math.min(window.innerHeight - TASKBAR_H - ICON_H, 36 + Math.round((cy - 36) / ICON_H) * ICON_H))
@@ -76,8 +76,15 @@ export function Desktop() {
       }
       setTimeout(() => { justDragged.current = false }, 50)
     }
+    const onCancel = () => {
+      document.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerup', onUp)
+      document.removeEventListener('pointercancel', onCancel)
+      setTimeout(() => { justDragged.current = false }, 50)
+    }
     document.addEventListener('pointermove', onMove)
     document.addEventListener('pointerup', onUp)
+    document.addEventListener('pointercancel', onCancel)
   }
 
   const openWindows = APPS.filter((a) => windows[a.id]?.open)
@@ -119,7 +126,17 @@ export function Desktop() {
                 key={a.id}
                 className="desk-icon"
                 style={{ left: p.x, top: p.y }}
+                role="button"
+                tabIndex={0}
+                aria-label={'Open ' + a.label}
                 onPointerDown={(e) => dragIcon(e, a.id, i)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    openSnd()
+                    useOS.getState().openWin(a.id, a.w, a.h)
+                  }
+                }}
                 onClick={(e) => {
                   e.stopPropagation()
                   if (justDragged.current) return

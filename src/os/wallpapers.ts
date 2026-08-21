@@ -11,7 +11,7 @@ function st(c: HTMLCanvasElement): Record<string, unknown> {
   return s
 }
 
-export const wps: { name: string; fn: WpFn }[] = [
+export const wps: { name: string; fn: WpFn; static?: boolean }[] = [
   { name: 'Matrix', fn: wpMatrix },
   { name: 'Starfield', fn: wpStars },
   { name: 'Plasma', fn: wpPlasma },
@@ -24,9 +24,9 @@ export const wps: { name: string; fn: WpFn }[] = [
   { name: 'Rain', fn: wpRain },
   { name: 'Fireflies', fn: wpFireflies },
   { name: 'Snowfall', fn: wpSnow },
-  { name: 'Classic Blue', fn: wpClassic },
-  { name: 'Teal', fn: wpTeal },
-  { name: 'Graphite', fn: wpGraphite },
+  { name: 'Classic Blue', fn: wpClassic, static: true },
+  { name: 'Teal', fn: wpTeal, static: true },
+  { name: 'Graphite', fn: wpGraphite, static: true },
 ]
 
 function wpClassic(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {

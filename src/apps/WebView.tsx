@@ -49,11 +49,11 @@ export default function WebView({ winId }: { winId?: string }) {
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') nav() }}
           />
-          <button className="browser-go" onClick={nav}>Go â–¶</button>
-          <button className="browser-go" onClick={openTab}>Open in Tab â–¶</button>
+          <button className="browser-go" onClick={nav}>Go ▶</button>
+          <button className="browser-go" onClick={openTab}>Open in Tab ▶</button>
         </div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6688aa', textAlign: 'center', padding: '3px 0', background: 'var(--panel)' }}>
-          Type a word to search or a URL â€” some sites refuse frames; if blank, hit "Open in Tab".
+          Type a word to search or a URL — some sites refuse frames; if blank, hit "Open in Tab".
         </div>
         {url ? (
           <iframe

@@ -4,7 +4,6 @@ import { useOS } from '../os/store'
 import { openApp } from '../os/registry'
 import { skillCategories } from '../data/skills'
 import { projects } from '../data/projects'
-import { certs } from '../data/content'
 
 interface Line {
   id: number
@@ -23,26 +22,51 @@ export default function Terminal() {
   const histIdxRef = useRef(-1)
   const startedRef = useRef(false)
   const bodyRef = useRef<HTMLDivElement>(null)
+  const aliveRef = useRef(true)
+  const timersRef = useRef<Set<ReturnType<typeof setInterval>>>(new Set())
+
+  useEffect(() => {
+    return () => {
+      aliveRef.current = false
+      timersRef.current.forEach((t) => clearInterval(t))
+      timersRef.current.clear()
+    }
+  }, [])
 
   const append = (cls: string, text: string) => setLines((p) => [...p, newLine(cls, text)])
 
   function typeLine(text: string, cls = 'green', speed = 16) {
     const id = ++lineSeq
+    if (!aliveRef.current) return Promise.resolve()
     setLines((p) => [...p, { id, cls, text: '' }])
     return new Promise<void>((resolve) => {
       let i = 0
       const t = setInterval(() => {
+        if (!aliveRef.current) {
+          clearInterval(t)
+          resolve()
+          return
+        }
         i++
         setLines((p) => p.map((l) => (l.id === id ? { ...l, text: text.slice(0, i) } : l)))
         if (i >= text.length) {
           clearInterval(t)
+          timersRef.current.delete(t)
           resolve()
         }
       }, speed)
+      timersRef.current.add(t)
     })
   }
 
-  const gap = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
+  const gap = (ms: number) =>
+    new Promise<void>((resolve) => {
+      const t = setTimeout(() => {
+        timersRef.current.delete(t)
+        resolve()
+      }, ms)
+      timersRef.current.add(t)
+    })
 
   useEffect(() => {
     if (startedRef.current) return
@@ -65,7 +89,11 @@ export default function Terminal() {
       await gap(150)
       await typeLine("Type 'help' for commands · 'neofetch' for system info", 'dim', 10)
       setReady(true)
-      setTimeout(() => useOS.getState().setClippy(true), 3000)
+      const ct = setTimeout(() => {
+        timersRef.current.delete(ct)
+        if (aliveRef.current) useOS.getState().setClippy(true)
+      }, 3000)
+      timersRef.current.add(ct)
     })()
   }, [])
 

@@ -28,18 +28,39 @@ export function Wallpaper() {
     resize()
     window.addEventListener('resize', resize)
 
-    const loop = () => {
+    const draw = () => {
       const ctx = canvas.getContext('2d')
       if (ctx && canvas.width > 0) {
         frame.current += speedRef.current
         wps[idx].fn(canvas, ctx, Math.floor(frame.current))
       }
+    }
+
+    const loop = () => {
+      draw()
       raf = requestAnimationFrame(loop)
     }
-    loop()
+
+    const onVisibility = () => {
+      cancelAnimationFrame(raf)
+      if (!document.hidden && !wps[idx].static) {
+        raf = requestAnimationFrame(loop)
+      } else if (wps[idx].static) {
+        resize()
+        draw()
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+
+    if (wps[idx].static) {
+      draw()
+    } else {
+      loop()
+    }
 
     return () => {
       cancelAnimationFrame(raf)
+      document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('resize', resize)
     }
   }, [idx])

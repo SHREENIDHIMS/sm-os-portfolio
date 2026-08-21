@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { WinBody, WinMenubar, MenuItem, WinStatusbar, StatusPanel } from '../ui/Window'
 import { clickSnd } from '../os/sound'
-import { useOS } from '../os/store'
 import { openWeb, toEmbed } from '../os/webview'
+import { openApp } from '../os/registry'
 
 interface WResult { title: string; link: string; snippet: string }
 interface GImg { title: string; thumb: string; full: string }
@@ -72,6 +72,7 @@ export default function Browser() {
   const [tab, setTab] = useState<Tab>('all')
   const [mapLoc, setMapLoc] = useState<{ name: string; bbox: string; marker: string } | null>(null)
   const [ytVids, setYtVids] = useState<YTVid[]>([])
+  const seqRef = useRef(0)
 
   const strip = (h: string) => h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 
@@ -104,27 +105,33 @@ export default function Browser() {
   }
 
   const runTab = async (q: string, t: Tab) => {
+    const seq = ++seqRef.current
+    const stale = () => seq !== seqRef.current
     setSearching(true)
     setErr(null)
     const t0 = performance.now()
     try {
       if (t === 'all') {
-        let { items, suggestion } = await wikiSearch(q)
+        const { items: firstItems, suggestion } = await wikiSearch(q)
+        let items = firstItems
+        if (stale()) return
         if (items.length === 0 && suggestion) {
           setCorrected(suggestion)
           setQuery(suggestion)
           const retry = await wikiSearch(suggestion)
+          if (stale()) return
           items = retry.items
-        }
-        setResults(items)
+        }        setResults(items)
         if (items.length === 0) setErr('No results for "' + q + '"')
       } else if (t === 'images') {
         const imgs = await commonsSearch(q, 'image')
+        if (stale()) return
         setImages(imgs)
         if (imgs.length === 0) setErr('No images for "' + q + '"')
       } else if (t === 'maps') {
         const r = await fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=1')
         const d = await r.json()
+        if (stale()) return
         if (!Array.isArray(d) || d.length === 0) {
           setMapLoc(null)
           setErr('No place found for "' + q + '"')
@@ -140,23 +147,27 @@ export default function Browser() {
       } else if (t === 'youtube') {
         try {
           const vids = await ytSearch(q)
+          if (stale()) return
           setYtVids(vids)
           if (vids.length === 0) setErr('No videos for "' + q + '"')
         } catch {
-          setErr('YouTube search is unavailable right now — paste any youtube.com link in the address bar and it will still play here.')
+          if (!stale()) setErr('YouTube search is unavailable right now — paste any youtube.com link in the address bar and it will still play here.')
         }
       } else {
         const vids = (await commonsSearch(q, 'video')).map((v) => ({ title: v.title, url: v.full }))
+        if (stale()) return
         setVideos(vids)
         if (vids.length === 0) setErr('No videos for "' + q + '"')
       }
+      if (stale()) return
       setTimeMs(Math.round(performance.now() - t0))
       setStatus('Done')
     } catch {
+      if (stale()) return
       setErr('Network error — check your connection')
       setStatus('Error')
     } finally {
-      setSearching(false)
+      if (!stale()) setSearching(false)
     }
   }
 
@@ -276,7 +287,7 @@ export default function Browser() {
               <button className="browser-link-btn" onClick={() => { clickSnd(); setUrl('https://github.com/SHREENIDHIMS'); openWeb('https://github.com/SHREENIDHIMS'); setStatus('Opened in OS Site Viewer') }}>🐙 GitHub</button>
               <button className="browser-link-btn" onClick={() => { clickSnd(); setUrl('https://linkedin.com/in/shreenidhi-m03'); openWeb('https://linkedin.com/in/shreenidhi-m03'); setStatus('Opened in OS Site Viewer') }}>🔗 LinkedIn</button>
               <button className="browser-link-btn" onClick={() => { clickSnd(); window.location.href = 'mailto:nshreenidhi655@gmail.com' }}>📧 Email</button>
-              <button className="browser-link-btn" onClick={() => { clickSnd(); useOS.getState().openWin('resumeWin', 640, 560) }}>📄 Resume</button>
+              <button className="browser-link-btn" onClick={() => { clickSnd(); openApp('resumeWin') }}>📄 Resume</button>
             </div>
             <div className="browser-tag">Live search runs inside this window — pages load in the OS Site Viewer, no new tabs.</div>
           </div>
